@@ -1,0 +1,57 @@
+[user]
+	email = {{ .email }}
+	name = {{ .name }}
+{{- if hasKey . "signingKey" }}
+	signingKey = {{ .signingKey }}
+{{- end }}
+
+[init]
+	defaultBranch = master
+
+[core]
+	editor = vim
+	excludesfile = ~/.config/git/ignore
+	ignorecase = false
+
+[pull]
+	ff = only
+
+[push]
+	default = current
+	autoSetupRemote = true
+
+[fetch]
+	prune = true
+
+[diff]
+	algorithm = histogram
+
+[merge]
+	conflictStyle = zdiff3
+
+[rerere]
+	enabled = true
+
+[alias]
+	co = checkout
+	br = branch
+	st = status -sb
+	lg = log --oneline --graph --decorate -20
+	unstage = reset HEAD --
+	last = log -1 HEAD
+	amend = commit --amend --no-edit
+	edit = commit --amend --only
+	ff = merge --ff-only
+
+[commit]
+	gpgSign = false
+	verbose = true
+
+[tag]
+	forceSignAnnotated = false
+
+[gpg]
+	format = openpgp
+
+[gpg "ssh"]
+	program = ssh-keygen

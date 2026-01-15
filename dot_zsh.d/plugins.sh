@@ -12,3 +12,6 @@ compinit
 
 plug "Aloxaf/fzf-tab"
 plug "zap-users/zsh-syntax-highlighting"
+
+# Atuin shell history
+eval "$(atuin init zsh)"

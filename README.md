@@ -9,10 +9,3 @@ This automated setup is currently configured for macOS machines.
 ```shell
 sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply noaahh
 ```
-
-## What's included
-
-- **zsh** - Shell configuration with modular .zsh.d setup
-- **nvim** - Neovim configuration with AstroNvim
-- **vim** - Basic vim configuration
-- **aerospace** - Tiling window manager for macOS

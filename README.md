@@ -7,8 +7,7 @@ This automated setup is currently configured for macOS machines.
 ## How to run
 
 ```shell
-export GITHUB_USERNAME=noaahh
-sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply $GITHUB_USERNAME
+sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply noaahh
 ```
 
 ## What's included

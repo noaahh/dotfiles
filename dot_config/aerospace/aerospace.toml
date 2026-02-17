@@ -32,7 +32,7 @@ after-startup-command = [
 
 [[on-window-detected]]
     if.app-id = 'com.mitchellh.ghostty'
-    run = 'layout tiling'
+    run = 'layout floating'
 
 [[on-window-detected]]
     if.app-id = 'com.DanPristupov.Fork'

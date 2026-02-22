@@ -1,6 +1,6 @@
 [user]
-	email = {{ .email }}
-	name = {{ .name }}
+	email = {{ if hasKey . "email" }}{{ .email }}{{ else }}test@example.com{{ end }}
+	name = {{ if hasKey . "name" }}{{ .name }}{{ else }}Test User{{ end }}
 {{- if hasKey . "signingKey" }}
 	signingKey = {{ .signingKey }}
 {{- end }}

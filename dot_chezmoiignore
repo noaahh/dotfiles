@@ -1,1 +1,5 @@
 README.md
+{{- if env "CI" }}
+# Skip encrypted files in CI environments
+private_dot_ssh/encrypted_config.age
+{{- end }}

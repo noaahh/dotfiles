@@ -34,18 +34,20 @@ jobs:
         run: sh -c "$(curl -fsLS get.chezmoi.io)"
 
       - name: Initialize and Apply
-        # Uses the downloaded binary and points the source to the checked-out repo
-        # Note: encrypted files will fail in CI without encryption key, but we continue
+        env:
+          CI: "true"
         run: |
           mkdir -p ~/.local/bin
           mv bin/chezmoi ~/.local/bin/
           export PATH="$HOME/.local/bin:$PATH"
-          chezmoi init --apply --source $GITHUB_WORKSPACE || true
+          chezmoi init --apply --source $GITHUB_WORKSPACE
 
       - name: Test Idempotency
+        env:
+          CI: "true"
         run: |
           export PATH="$HOME/.local/bin:$PATH"
-          chezmoi apply --source $GITHUB_WORKSPACE || true
+          chezmoi apply --source $GITHUB_WORKSPACE
 
       - name: Verify Dotfiles Applied
         run: |
@@ -72,6 +74,8 @@ jobs:
         run: sh -c "$(curl -fsLS get.chezmoi.io)"
 
       - name: Validate Chezmoi Syntax
+        env:
+          CI: "true"
         run: |
           mkdir -p ~/.local/bin
           mv bin/chezmoi ~/.local/bin/

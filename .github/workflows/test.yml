@@ -16,7 +16,8 @@ jobs:
       - name: Run ShellCheck
         uses: ludeeus/action-shellcheck@master
         with:
-          scandir: './dot_zsh.d'
+          scandir: '.'
+          ignore_paths: 'dot_zsh.d'
 
   test:
     needs: lint

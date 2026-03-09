@@ -31,10 +31,6 @@ after-startup-command = [
     run = 'move-node-to-workspace 3'
 
 [[on-window-detected]]
-    if.app-id = 'com.mitchellh.ghostty'
-    run = 'layout floating'
-
-[[on-window-detected]]
     if.app-id = 'com.DanPristupov.Fork'
     run = ['layout floating', 'move-node-to-workspace 5']
 

@@ -5,7 +5,7 @@ FONT="JetBrainsMono Nerd Font"
 
 ##### Bar Appearance #####
 sketchybar --bar position=top \
-                 height=24 \
+                 height=33 \
                  blur_radius=30 \
                  color=0xcc1e1e2e \
                  border_color=0xff2e2e3e \

@@ -1,14 +1,15 @@
 enable-normalization-flatten-containers = true
 enable-normalization-opposite-orientation-for-nested-containers = true
 
-on-focused-monitor-changed = ['move-mouse monitor-lazy-center']
 on-focus-changed = 'move-mouse window-lazy-center'
 
 automatically-unhide-macos-hidden-apps = true
 
 after-startup-command = [
-  'exec-and-forget borders active_color=0xffe1e3e4 inactive_color=0xff494d64 width=10.0'
+  'exec-and-forget ~/.config/aerospace/gap-toggle.sh'
 ]
+
+on-focused-monitor-changed = ['move-mouse monitor-lazy-center', 'exec-and-forget ~/.config/aerospace/gap-toggle.sh']
 
 # Notify sketchybar on workspace change
 exec-on-workspace-change = ['/bin/bash', '-c',
@@ -16,7 +17,7 @@ exec-on-workspace-change = ['/bin/bash', '-c',
 ]
 
 [gaps]
-outer.top = 0
+outer.top = 33
 outer.bottom = 0
 outer.left = 0
 outer.right = 0

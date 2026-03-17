@@ -5,7 +5,7 @@ FONT="JetBrainsMono Nerd Font"
 
 ##### Bar Appearance #####
 sketchybar --bar position=top \
-                 height=33 \
+                 height=24 \
                  blur_radius=30 \
                  color=0xcc1e1e2e \
                  border_color=0xff2e2e3e \
@@ -75,6 +75,12 @@ sketchybar --add item memory right \
 sketchybar --add item network right \
            --set network update_freq=3 \
                           script="$PLUGIN_DIR/network.sh"
+
+# Display change handler
+sketchybar --add item display_handler center \
+           --set display_handler drawing=off \
+                                 script="$HOME/.config/aerospace/gap-toggle.sh" \
+           --subscribe display_handler display_change system_woke
 
 ##### Force all scripts to run the first time #####
 sketchybar --update

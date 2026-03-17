@@ -17,8 +17,8 @@ sketchybar --bar position=top \
 
 ##### Changing Defaults #####
 default=(
-  padding_left=4
-  padding_right=4
+  padding_left=6
+  padding_right=6
   icon.font="$FONT:Bold:11.0"
   label.font="$FONT:Regular:11.0"
   icon.color=0xffcad3f5
@@ -46,14 +46,6 @@ for sid in 1 2 3 4 5 6; do
                               script="$PLUGIN_DIR/aerospace.sh $sid" \
              --subscribe space.$sid aerospace_workspace_change
 done
-
-##### Front App (with icon) #####
-sketchybar --add item front_app left \
-           --set front_app icon.drawing=on \
-                           icon.font="sketchybar-app-font:Regular:11.0" \
-                           script="$PLUGIN_DIR/front_app.sh" \
-                           label.font="$FONT:Regular:11.0" \
-           --subscribe front_app front_app_switched
 
 ##### Right Items #####
 # Clock

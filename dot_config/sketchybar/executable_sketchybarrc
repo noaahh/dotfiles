@@ -13,7 +13,7 @@ sketchybar --bar position=top \
                  shadow=off \
                  sticky=on \
                  padding_left=6 \
-                 padding_right=6 \
+                 padding_right=12 \
                  topmost=window \
                  font_smoothing=on
 
@@ -50,7 +50,8 @@ done
 sketchybar --add item clock right \
            --set clock update_freq=1 \
                        label.font="$FONT:Bold:11.0" \
-                       label.width=dynamic \
+                       label.width=120 \
+                       label.align=right \
                        script="$PLUGIN_DIR/clock.sh" \
                        updates=on \
            \

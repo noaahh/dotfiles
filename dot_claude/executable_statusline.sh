@@ -85,27 +85,25 @@ iso_to_epoch() {
 
 format_reset_time() {
     local iso_str="$1"
-    local style="$2"
     [ -z "$iso_str" ] || [ "$iso_str" = "null" ] && return
 
     local epoch
     epoch=$(iso_to_epoch "$iso_str")
     [ -z "$epoch" ] && return
 
-    case "$style" in
-        time)
-            /bin/date -j -r "$epoch" +"%l:%M%p" 2>/dev/null | sed 's/^ //; s/\.//g' | tr '[:upper:]' '[:lower:]' || \
-            date -d "@$epoch" +"%l:%M%P" 2>/dev/null | sed 's/^ //; s/\.//g'
-            ;;
-        datetime)
-            /bin/date -j -r "$epoch" +"%b %-d, %l:%M%p" 2>/dev/null | sed 's/  / /g; s/^ //; s/\.//g' | tr '[:upper:]' '[:lower:]' || \
-            date -d "@$epoch" +"%b %-d, %l:%M%P" 2>/dev/null | sed 's/  / /g; s/^ //; s/\.//g'
-            ;;
-        *)
-            /bin/date -j -r "$epoch" +"%b %-d" 2>/dev/null | tr '[:upper:]' '[:lower:]' || \
-            date -d "@$epoch" +"%b %-d" 2>/dev/null
-            ;;
-    esac
+    local now_epoch=$(/bin/date +%s)
+    local diff=$(( epoch - now_epoch ))
+    [ "$diff" -le 0 ] && { printf "now"; return; }
+
+    if [ "$diff" -ge 86400 ]; then
+        printf "%dd%dh" $(( diff / 86400 )) $(( (diff % 86400) / 3600 ))
+    elif [ "$diff" -ge 3600 ]; then
+        printf "%dh%dm" $(( diff / 3600 )) $(( (diff % 3600) / 60 ))
+    elif [ "$diff" -ge 60 ]; then
+        printf "%dm" $(( diff / 60 ))
+    else
+        printf "%ds" "$diff"
+    fi
 }
 
 # ── Extract JSON data ───────────────────────────────────
@@ -114,7 +112,28 @@ model_name=$(echo "$input" | jq -r '.model.display_name // "Claude"')
 session_cost=$(echo "$input" | jq -r '.cost.total_cost_usd // 0')
 session_cost_fmt=""
 if [ -n "$session_cost" ] && [ "$session_cost" != "0" ] && [ "$session_cost" != "null" ]; then
-    session_cost_fmt=$(awk "BEGIN {printf \"\$%.4f\", $session_cost}")
+    session_cost_fmt=$(awk "BEGIN {printf \"\$%.2f\", $session_cost}")
+fi
+
+# ── Weekly cost tracking ─────────────────────────────
+weekly_cost_dir="/tmp/claude"
+weekly_cost_file="$weekly_cost_dir/weekly-costs.json"
+current_week=$(/bin/date +%Y-W%V)
+session_id=$(echo "$input" | jq -r '.session_id // empty')
+
+weekly_cost_fmt=""
+if [ -n "$session_id" ] && [ "$session_id" != "null" ] && [ -n "$session_cost" ] && [ "$session_cost" != "0" ] && [ "$session_cost" != "null" ]; then
+    # Ensure file exists with current week
+    if [ ! -f "$weekly_cost_file" ] || [ "$(jq -r '.week // ""' "$weekly_cost_file" 2>/dev/null)" != "$current_week" ]; then
+        echo "{\"week\":\"$current_week\",\"sessions\":{}}" > "$weekly_cost_file"
+    fi
+    # Update this session's cost
+    jq --arg sid "$session_id" --argjson cost "$session_cost" '.sessions[$sid] = $cost' "$weekly_cost_file" > "${weekly_cost_file}.tmp" && mv "${weekly_cost_file}.tmp" "$weekly_cost_file"
+    # Sum all sessions
+    weekly_total=$(jq '[.sessions | to_entries[].value] | add // 0' "$weekly_cost_file" 2>/dev/null)
+    if [ -n "$weekly_total" ] && [ "$weekly_total" != "0" ]; then
+        weekly_cost_fmt=$(awk "BEGIN {printf \"\$%.2f\", $weekly_total}")
+    fi
 fi
 
 size=$(echo "$input" | jq -r '.context_window.context_window_size // 200000')
@@ -157,19 +176,15 @@ if git -C "$cwd" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
 fi
 
 session_duration=""
-session_start=$(echo "$input" | jq -r '.session.start_time // empty')
-if [ -n "$session_start" ] && [ "$session_start" != "null" ]; then
-    start_epoch=$(iso_to_epoch "$session_start")
-    if [ -n "$start_epoch" ]; then
-        now_epoch=$(date +%s)
-        elapsed=$(( now_epoch - start_epoch ))
-        if [ "$elapsed" -ge 3600 ]; then
-            session_duration="$(( elapsed / 3600 ))h$(( (elapsed % 3600) / 60 ))m"
-        elif [ "$elapsed" -ge 60 ]; then
-            session_duration="$(( elapsed / 60 ))m"
-        else
-            session_duration="${elapsed}s"
-        fi
+total_duration_ms=$(echo "$input" | jq -r '.cost.total_duration_ms // 0')
+if [ "$total_duration_ms" -gt 0 ] 2>/dev/null; then
+    elapsed=$(( total_duration_ms / 1000 ))
+    if [ "$elapsed" -ge 3600 ]; then
+        session_duration="$(( elapsed / 3600 ))h$(( (elapsed % 3600) / 60 ))m"
+    elif [ "$elapsed" -ge 60 ]; then
+        session_duration="$(( elapsed / 60 ))m"
+    else
+        session_duration="${elapsed}s"
     fi
 fi
 
@@ -187,7 +202,11 @@ if [ -n "$session_duration" ]; then
 fi
 if [ -n "$session_cost_fmt" ]; then
     line1+="${sep}"
-    line1+="${dim}cost${reset} ${green}${session_cost_fmt}${reset}"
+    if [ -n "$weekly_cost_fmt" ]; then
+        line1+="${dim}cost${reset} ${green}${session_cost_fmt}${dim}/${reset}${green}${weekly_cost_fmt}${reset}"
+    else
+        line1+="${dim}cost${reset} ${green}${session_cost_fmt}${reset}"
+    fi
 fi
 line1+="${sep}"
 if $thinking_on; then
@@ -287,21 +306,21 @@ if [ -n "$usage_data" ] && echo "$usage_data" | jq -e . >/dev/null 2>&1; then
 
     five_hour_pct=$(echo "$usage_data" | jq -r '.five_hour.utilization // 0' | awk '{printf "%.0f", $1}')
     five_hour_reset_iso=$(echo "$usage_data" | jq -r '.five_hour.resets_at // empty')
-    five_hour_reset=$(format_reset_time "$five_hour_reset_iso" "time")
+    five_hour_reset=$(format_reset_time "$five_hour_reset_iso")
     five_hour_bar=$(build_bar "$five_hour_pct" "$bar_width")
     five_hour_pct_color=$(color_for_pct "$five_hour_pct")
     five_hour_pct_fmt=$(printf "%3d" "$five_hour_pct")
 
-    rate_lines+="${white}current${reset} ${five_hour_bar} ${five_hour_pct_color}${five_hour_pct_fmt}%${reset} ${dim}resets${reset} ${white}${five_hour_reset}${reset}"
+    rate_lines+="${white}current${reset} ${five_hour_bar} ${five_hour_pct_color}${five_hour_pct_fmt}%${reset} ${dim}resets in${reset} ${white}${five_hour_reset}${reset}"
 
     seven_day_pct=$(echo "$usage_data" | jq -r '.seven_day.utilization // 0' | awk '{printf "%.0f", $1}')
     seven_day_reset_iso=$(echo "$usage_data" | jq -r '.seven_day.resets_at // empty')
-    seven_day_reset=$(format_reset_time "$seven_day_reset_iso" "datetime")
+    seven_day_reset=$(format_reset_time "$seven_day_reset_iso")
     seven_day_bar=$(build_bar "$seven_day_pct" "$bar_width")
     seven_day_pct_color=$(color_for_pct "$seven_day_pct")
     seven_day_pct_fmt=$(printf "%3d" "$seven_day_pct")
 
-    rate_lines+="\n${white}weekly${reset}  ${seven_day_bar} ${seven_day_pct_color}${seven_day_pct_fmt}%${reset} ${dim}resets${reset} ${white}${seven_day_reset}${reset}"
+    rate_lines+="\n${white}weekly${reset}  ${seven_day_bar} ${seven_day_pct_color}${seven_day_pct_fmt}%${reset} ${dim}resets in${reset} ${white}${seven_day_reset}${reset}"
 
     extra_enabled=$(echo "$usage_data" | jq -r '.extra_usage.is_enabled // false')
     if [ "$extra_enabled" = "true" ]; then

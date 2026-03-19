@@ -63,23 +63,16 @@ build_bar() {
 
 iso_to_epoch() {
     local iso_str="$1"
-
-    local epoch
-    epoch=$(date -d "${iso_str}" +%s 2>/dev/null)
-    if [ -n "$epoch" ]; then
-        echo "$epoch"
-        return 0
-    fi
-
     local stripped="${iso_str%%.*}"
     stripped="${stripped%%Z}"
     stripped="${stripped%%+*}"
     stripped="${stripped%%-[0-9][0-9]:[0-9][0-9]}"
 
+    local epoch
     if [[ "$iso_str" == *"Z"* ]] || [[ "$iso_str" == *"+00:00"* ]] || [[ "$iso_str" == *"-00:00"* ]]; then
-        epoch=$(env TZ=UTC date -j -f "%Y-%m-%dT%H:%M:%S" "$stripped" +%s 2>/dev/null)
+        epoch=$(env TZ=UTC /bin/date -j -f "%Y-%m-%dT%H:%M:%S" "$stripped" +%s 2>/dev/null)
     else
-        epoch=$(date -j -f "%Y-%m-%dT%H:%M:%S" "$stripped" +%s 2>/dev/null)
+        epoch=$(/bin/date -j -f "%Y-%m-%dT%H:%M:%S" "$stripped" +%s 2>/dev/null)
     fi
 
     if [ -n "$epoch" ]; then
@@ -101,15 +94,15 @@ format_reset_time() {
 
     case "$style" in
         time)
-            date -j -r "$epoch" +"%l:%M%p" 2>/dev/null | sed 's/^ //; s/\.//g' | tr '[:upper:]' '[:lower:]' || \
+            /bin/date -j -r "$epoch" +"%l:%M%p" 2>/dev/null | sed 's/^ //; s/\.//g' | tr '[:upper:]' '[:lower:]' || \
             date -d "@$epoch" +"%l:%M%P" 2>/dev/null | sed 's/^ //; s/\.//g'
             ;;
         datetime)
-            date -j -r "$epoch" +"%b %-d, %l:%M%p" 2>/dev/null | sed 's/  / /g; s/^ //; s/\.//g' | tr '[:upper:]' '[:lower:]' || \
+            /bin/date -j -r "$epoch" +"%b %-d, %l:%M%p" 2>/dev/null | sed 's/  / /g; s/^ //; s/\.//g' | tr '[:upper:]' '[:lower:]' || \
             date -d "@$epoch" +"%b %-d, %l:%M%P" 2>/dev/null | sed 's/  / /g; s/^ //; s/\.//g'
             ;;
         *)
-            date -j -r "$epoch" +"%b %-d" 2>/dev/null | tr '[:upper:]' '[:lower:]' || \
+            /bin/date -j -r "$epoch" +"%b %-d" 2>/dev/null | tr '[:upper:]' '[:lower:]' || \
             date -d "@$epoch" +"%b %-d" 2>/dev/null
             ;;
     esac
@@ -318,7 +311,7 @@ if [ -n "$usage_data" ] && echo "$usage_data" | jq -e . >/dev/null 2>&1; then
         extra_bar=$(build_bar "$extra_pct" "$bar_width")
         extra_pct_color=$(color_for_pct "$extra_pct")
 
-        extra_reset=$(date -v+1m -v1d +"%b %-d" 2>/dev/null | tr '[:upper:]' '[:lower:]')
+        extra_reset=$(/bin/date -v+1m -v1d +"%b %-d" 2>/dev/null | tr '[:upper:]' '[:lower:]')
         if [ -z "$extra_reset" ]; then
             extra_reset=$(date -d "$(date +%Y-%m-01) +1 month" +"%b %-d" 2>/dev/null | tr '[:upper:]' '[:lower:]')
         fi

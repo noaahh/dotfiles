@@ -46,6 +46,12 @@ for sid in 1 2 3 4 5 6; do
              --subscribe space.$sid aerospace_workspace_change
 done
 
+sketchybar --add item front_app left \
+           --set front_app label.padding_left=8 \
+                           updates=on \
+                           script="$PLUGIN_DIR/front_app.sh" \
+           --subscribe front_app front_app_switched
+
 ##### Right Items #####
 sketchybar --add item clock right \
            --set clock update_freq=1 \

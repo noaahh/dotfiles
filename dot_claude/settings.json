@@ -2,6 +2,7 @@
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
   "cleanupPeriodDays": 30,
   "attribution": {
+    "commit": "",
     "pr": ""
   },
   "permissions": {
@@ -13,7 +14,11 @@
       "Bash(pwd:*)",
       "Bash(whoami:*)",
       "Bash(which:*)",
-      "Bash(uv:*)",
+      "Bash(uv pip list:*)",
+      "Bash(uv pip show:*)",
+      "Bash(uv pip freeze:*)",
+      "Bash(uv tree:*)",
+      "Bash(uv python list:*)",
       "Bash(cat:*)",
       "Bash(echo:*)",
       "Bash(head:*)",
@@ -31,16 +36,26 @@
       "Bash(git branch:*)",
       "Bash(git remote:*)",
       "Bash(git stash list:*)",
+      "Bash(git blame:*)",
+      "Bash(git tag:*)",
+      "Bash(git ls-files:*)",
       "Bash(gh pr view:*)",
       "Bash(gh pr list:*)",
+      "Bash(gh pr diff:*)",
+      "Bash(gh pr checks:*)",
+      "Bash(gh pr status:*)",
       "Bash(gh issue view:*)",
       "Bash(gh issue list:*)",
       "Bash(gh run view:*)",
-      "Bash(gh api:*)",
+      "Bash(gh run list:*)",
+      "Bash(gh repo view:*)",
       "Bash(docker ps:*)",
       "Bash(docker images:*)",
+      "Bash(docker logs:*)",
+      "Bash(docker inspect:*)",
       "Bash(brew list:*)",
       "Bash(brew info:*)",
+      "Bash(obsidian:*)",
       "mcp__linear-server__get_attachment",
       "mcp__linear-server__list_comments",
       "mcp__linear-server__list_cycles",
@@ -113,8 +128,17 @@
       "Bash(snow spcs compute-pool drop *)",
       "Bash(snow spcs compute-pool stop-all *)",
       "Bash(snow spcs service drop *)",
-      "Bash(snow snowpark drop *)"
-    ]
+      "Bash(snow snowpark drop *)",
+      "Bash(obsidian eval:*)",
+      "Bash(gh repo delete:*)",
+      "Bash(gh repo archive:*)",
+      "Bash(gh repo transfer:*)",
+      "Bash(gh release delete:*)",
+      "Bash(gh secret delete:*)",
+      "Bash(gh variable delete:*)",
+      "Bash(gh run cancel:*)"
+    ],
+    "defaultMode": "default"
   },
   "hooks": {
     "PreToolUse": [
@@ -124,6 +148,11 @@
           {
             "type": "command",
             "command": "~/.claude/scripts/approve-compound-bash.sh",
+            "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "python3 ~/.claude/scripts/check-snow-sql.py",
             "timeout": 5
           }
         ]

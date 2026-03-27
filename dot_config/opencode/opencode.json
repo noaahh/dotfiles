@@ -7,5 +7,9 @@
   "permission": {
     "bash": "ask"
   },
+  "share": "disabled",
+  "watcher": {
+    "ignore": ["node_modules/**", ".venv/**", "dist/**", "build/**", ".git/**", "__pycache__/**", "*.egg-info/**", ".mypy_cache/**", ".pytest_cache/**"]
+  },
   "autoupdate": true
 }

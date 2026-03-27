@@ -24,4 +24,4 @@ quit-after-last-window-closed = true
 bell-features = no-system,no-audio,no-attention,no-title,no-border
 
 # Theme
-theme = dark:Flexoki Dark,light:Flexoki Light
+theme = Flexoki Dark

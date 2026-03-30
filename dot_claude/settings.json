@@ -149,11 +149,6 @@
             "type": "command",
             "command": "~/.claude/scripts/approve-compound-bash.sh",
             "timeout": 5
-          },
-          {
-            "type": "command",
-            "command": "python3 ~/.claude/scripts/check-snow-sql.py",
-            "timeout": 5
           }
         ]
       }

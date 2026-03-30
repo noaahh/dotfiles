@@ -1,9 +1,7 @@
 [user]
 	email = {{ if hasKey . "email" }}{{ .email }}{{ else }}test@example.com{{ end }}
 	name = {{ if hasKey . "name" }}{{ .name }}{{ else }}Test User{{ end }}
-{{- if hasKey . "signingKey" }}
-	signingKey = {{ .signingKey }}
-{{- end }}
+	signingKey = ~/.ssh/id_signing.pub
 
 [init]
 	defaultBranch = master
@@ -44,14 +42,14 @@
 	ff = merge --ff-only
 
 [commit]
-	gpgSign = false
+	gpgSign = true
 	verbose = true
 
 [tag]
-	forceSignAnnotated = false
+	forceSignAnnotated = true
 
 [gpg]
-	format = openpgp
+	format = ssh
 
 [gpg "ssh"]
-	program = ssh-keygen
+	allowedSignersFile = ~/.config/git/allowed_signers

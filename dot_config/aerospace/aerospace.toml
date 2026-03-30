@@ -15,7 +15,7 @@ exec-on-workspace-change = ['/bin/bash', '-c',
 ]
 
 [gaps]
-outer.top = 28
+outer.top = 8
 outer.bottom = 8
 outer.left = 8
 outer.right = 8

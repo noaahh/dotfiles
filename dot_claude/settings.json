@@ -154,9 +154,15 @@
       }
     ]
   },
-  "statusLine": {
-    "type": "command",
-    "command": "bash \"$HOME/.claude/statusline.sh\""
+  "enabledPlugins": {
+    "codex@openai-codex": true
   },
-  "enabledPlugins": {}
+  "extraKnownMarketplaces": {
+    "openai-codex": {
+      "source": {
+        "source": "github",
+        "repo": "openai/codex-plugin-cc"
+      }
+    }
+  }
 }

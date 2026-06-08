@@ -1,0 +1,52 @@
+onboarding = false
+[theme]
+name = "tokyo-night"
+
+[terminal]
+shell_mode = "login"
+new_cwd = "follow"
+
+[keys]
+prefix = "ctrl+b"
+
+[[keys.command]]
+key = "prefix+alt+g"
+type = "pane"
+command = "lazygit"
+
+[[keys.command]]
+key = "cmd+o"
+type = "pane"
+command = "~/.config/herdr/search.sh active"
+description = "search active chats"
+
+[[keys.command]]
+key = "cmd+shift+a"
+type = "pane"
+command = "~/.config/herdr/search.sh archived"
+description = "search archived chats"
+
+[[keys.command]]
+key = "alt+a"
+type = "shell"
+command = "~/.config/herdr/next-pending.sh"
+description = "focus next pending agent"
+
+[ui]
+sidebar_width = 28
+mouse_capture = true
+confirm_close = true
+agent_panel_scope = "all"
+
+show_agent_labels_on_pane_borders = true
+[ui.toast]
+delivery = "terminal"
+
+[ui.sound]
+enabled = false
+
+[session]
+resume_agents_on_restore = true
+
+[experimental]
+pane_history = true

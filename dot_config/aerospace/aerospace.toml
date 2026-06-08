@@ -51,7 +51,7 @@ inner.vertical = 4
     run = 'move-node-to-workspace 5'
 
 [mode.main.binding]
-    ctrl-alt-cmd-t = "exec-and-forget open -n -a ghostty"
+    ctrl-alt-cmd-t = "exec-and-forget open -n -a kitty"
     ctrl-alt-cmd-e = "exec-and-forget open -n -a helium"
     ctrl-alt-cmd-q = "close --quit-if-last-window"
 

@@ -9,8 +9,8 @@ new_cwd = "follow"
 
 [keys]
 prefix = "ctrl+b"
-previous_tab = "prefix+left"
-next_tab = "prefix+right"
+previous_tab = "prefix+p"
+next_tab = "prefix+n"
 previous_workspace = "prefix+shift+left"
 next_workspace = "prefix+shift+right"
 

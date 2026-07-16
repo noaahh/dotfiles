@@ -46,6 +46,12 @@ command = "persiyanov.reviewr.toggle"
 description = "toggle reviewr"
 
 [[keys.command]]
+key = "prefix+backtick"
+type = "plugin_action"
+command = "herdr-floax.toggle"
+description = "toggle floating shell"
+
+[[keys.command]]
 key = "alt+a"
 type = "shell"
 command = "~/.config/herdr/next-pending.sh"

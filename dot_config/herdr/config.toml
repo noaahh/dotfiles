@@ -46,7 +46,7 @@ command = "persiyanov.reviewr.toggle"
 description = "toggle reviewr"
 
 [[keys.command]]
-key = "prefix+backtick"
+key = "prefix+u"
 type = "plugin_action"
 command = "herdr-floax.toggle"
 description = "toggle floating shell"

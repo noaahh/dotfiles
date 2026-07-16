@@ -1,7 +1,8 @@
 onboarding = false
 [theme]
-name = "tokyo-night"
+name = "vesper"
 
+auto_switch = false
 [terminal]
 shell_mode = "login"
 new_cwd = "follow"
@@ -15,22 +16,46 @@ type = "pane"
 command = "lazygit"
 
 [[keys.command]]
-key = "cmd+o"
-type = "pane"
-command = "~/.config/herdr/search.sh active"
-description = "search active chats"
+key = "prefix+t"
+type = "plugin_action"
+command = "herdr-navigator.open"
+description = "jump to anything"
 
 [[keys.command]]
-key = "cmd+shift+a"
-type = "pane"
-command = "~/.config/herdr/search.sh archived"
-description = "search archived chats"
+key = "prefix+shift+o"
+type = "plugin_action"
+command = "jwarykowski.herdr-shepherd.open"
+description = "shepherd"
+
+[[keys.command]]
+key = "prefix+f"
+type = "shell"
+command = "herdr plugin action invoke open-file-viewer --plugin herdr-file-viewer"
+description = "file viewer"
+
+[[keys.command]]
+key = "prefix+shift+f"
+type = "shell"
+command = "herdr plugin action invoke open-file-viewer-tab --plugin herdr-file-viewer"
+description = "file viewer tab"
+
+[[keys.command]]
+key = "prefix+d"
+type = "plugin_action"
+command = "persiyanov.reviewr.toggle"
+description = "toggle reviewr"
 
 [[keys.command]]
 key = "alt+a"
 type = "shell"
 command = "~/.config/herdr/next-pending.sh"
 description = "focus next pending agent"
+
+[[keys.command]]
+key = "alt+shift+a"
+type = "pane"
+command = "~/.config/herdr/agent-switcher.sh"
+description = "pick agent"
 
 [ui]
 sidebar_width = 28
@@ -39,11 +64,12 @@ confirm_close = true
 agent_panel_scope = "all"
 
 show_agent_labels_on_pane_borders = true
+agent_panel_sort = "priority"
 [ui.toast]
-delivery = "terminal"
+delivery = "off"
 
 [ui.sound]
-enabled = false
+enabled = true
 
 [session]
 resume_agents_on_restore = true

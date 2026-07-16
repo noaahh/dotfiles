@@ -30,7 +30,7 @@ build_candidates() {
   | $agents.result.agents
   | map(select(.agent_status == $status))
   | sort_by(
-      if .agent_status == "blocked" then 0 elif .agent_status == "working" then 1 else 2 end,
+      if .agent_status == "blocked" then 0 elif .agent_status == "done" then 1 elif .agent_status == "working" then 2 else 3 end,
       ($workspace_order[.workspace_id] // 9999),
       ($tab_order[.tab_id] // 9999),
       .pane_id
@@ -43,6 +43,10 @@ build_candidates() {
 
 # Fields: pane_id, workspace_id, tab_id, status, agent, cwd
 candidates=$(build_candidates blocked)
+
+if [[ -z "$candidates" ]]; then
+  candidates=$(build_candidates done)
+fi
 
 if [[ -z "$candidates" ]]; then
   candidates=$(build_candidates working)

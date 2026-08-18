@@ -6,7 +6,6 @@ if ! command -v herdr >/dev/null 2>&1; then
     exit 0
 fi
 
-herdr plugin install yankewei/herdr-focus-notify --yes
 herdr plugin install thanhdat77/herdr-navigator --ref v0.3.2 --yes
 herdr plugin install jwarykowski/shepherd --yes
 herdr plugin install smarzban/herdr-file-viewer --yes

@@ -8,12 +8,6 @@ automatically-unhide-macos-hidden-apps = true
 after-startup-command = [
 ]
 
-
-# Notify sketchybar on workspace change
-exec-on-workspace-change = ['/bin/bash', '-c',
-  'sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$AEROSPACE_FOCUSED_WORKSPACE'
-]
-
 [gaps]
 outer.top = 4
 outer.bottom = 4

@@ -1,5 +1,17 @@
+# Docker CLI completions must be on fpath before supercharge initializes them.
+fpath=("$HOME/.docker/completions" $fpath)
+
 # Source .sh files in .zsh.d
+# 99-local.sh is intentionally unmanaged: machine-local and work-specific config.
 
 for config_file in ~/.zsh.d/*.sh; do
   [ -r "$config_file" ] && source "$config_file"
 done
+
+# Plugin-installed binaries land here (e.g. the shepherd symlink).
+export PATH="$HOME/bin:$PATH"
+
+export PATH="$HOME/.bun/bin:$PATH"
+
+# Keep the first occurrence of each PATH entry.
+typeset -U path

@@ -1,0 +1,19 @@
+#!/bin/sh
+# Collie (phone bridge for the Herdr agent herd) opens a network service and
+# tailscale-serve ingress, so it is installed only where it is wanted rather
+# than on every machine this repo provisions.
+#
+# Opt in per machine by setting `collie = true` under [data] in the local
+# ~/.config/chezmoi/chezmoi.toml. The flag lives there, not here, so no
+# hostname or tailnet name ends up in this repo.
+
+set -eu
+
+if ! command -v herdr >/dev/null 2>&1; then
+    exit 0
+fi
+
+{{ if and (hasKey . "collie") .collie -}}
+herdr plugin install AltanS/collie --yes
+herdr server reload-config >/dev/null 2>&1 || true
+{{- end }}

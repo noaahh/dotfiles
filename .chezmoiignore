@@ -1,0 +1,8 @@
+README.md
+{{- if not (lookPath "age") }}
+# No age binary/identity on this machine, so the encrypted ssh config cannot be
+# decrypted. Ignore it rather than letting `chezmoi status`/`apply` abort.
+# Install age and add an [age] stanza to chezmoi.toml to manage it again.
+.ssh/config
+.ssh/config.age
+{{- end }}

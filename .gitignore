@@ -6,7 +6,8 @@
 ._*
 
 # Custom folder icons
-Icon
+Icon
+
 
 # Volume root files
 .DocumentRevisions-V100
@@ -16,3 +17,12 @@ Icon
 .Trashes
 .VolumeIcon.icns
 .com.apple.timemachine.donotpresent
+### chezmoi: intentionally local-only
+# Coding agent configs stay off this public repo. They accumulate per-directory
+# trust entries, MCP server definitions and project paths that point at work
+# repos, and re-adding them keeps dragging that back in. Manage them by hand.
+dot_claude/
+dot_codex/
+dot_config/opencode/
+# Machine-local shell config (see dot_zshrc).
+dot_zsh.d/99-local.sh

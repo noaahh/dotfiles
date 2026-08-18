@@ -31,6 +31,10 @@ inner.vertical = 4
     run = 'layout floating'
 
 [[on-window-detected]]
+    if.app-id = 'org.keepassxc.keepassxc'
+    run = 'layout floating'
+
+[[on-window-detected]]
     if.app-id = 'com.microsoft.teams2'
     run = 'move-node-to-workspace 3'
 

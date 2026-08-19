@@ -14,9 +14,9 @@ brew "gnupg"
 brew "pinentry-mac"
 
 # Languages
-brew "node"
+# node and go come from mise (~/.config/mise/config.toml), not brew.
+brew "mise"
 brew "uv"
-brew "go"
 
 # Development
 brew "opencode"

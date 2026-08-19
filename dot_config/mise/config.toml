@@ -1,0 +1,6 @@
+# Language runtimes are pinned here instead of installed as brew formulas, so
+# versions are declarative and per-project .mise.toml files can override them.
+# Applied by the run_onchange mise script whenever this file changes.
+[tools]
+node = "26"
+go = "1.26"

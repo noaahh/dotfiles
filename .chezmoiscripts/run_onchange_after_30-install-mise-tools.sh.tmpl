@@ -1,0 +1,19 @@
+{{- if eq .chezmoi.os "darwin" -}}
+#!/bin/bash
+# Installs the runtimes pinned in the mise config whenever it changes. mise
+# itself comes from the Brewfile, which the before-phase script has already
+# reconciled by the time this runs.
+# mise config hash: {{ include "dot_config/mise/config.toml" | sha256sum }}
+
+set -euo pipefail
+
+# /opt/homebrew on Apple Silicon, /usr/local on Intel.
+for brew_path in /opt/homebrew/bin/brew /usr/local/bin/brew; do
+  if [[ -x "$brew_path" ]]; then
+    eval "$("$brew_path" shellenv)"
+    break
+  fi
+done
+
+mise install --yes
+{{ end -}}

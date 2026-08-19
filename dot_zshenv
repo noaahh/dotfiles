@@ -1,0 +1,5 @@
+# Sourced by every zsh, including non-interactive ones (scripts, herdr
+# plugin builds, editor subprocesses). mise shims make its runtimes (node,
+# go) available there; interactive shells additionally run `mise activate`
+# via .zsh.d/mise.sh, which takes precedence over the shims.
+export PATH="$HOME/.local/share/mise/shims:$PATH"

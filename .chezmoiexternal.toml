@@ -1,0 +1,11 @@
+# Zap used to be installed by its curl installer in a separate bootstrap repo.
+# As a git-repo external, chezmoi clones it on first apply and pulls at most
+# once per refreshPeriod, so it stays current without an installer.
+[".local/share/zap"]
+    type = "git-repo"
+    url = "https://github.com/zap-zsh/zap.git"
+    refreshPeriod = "168h"
+    [".local/share/zap".clone]
+        args = ["--branch", "release-v1", "--depth", "1"]
+    [".local/share/zap".pull]
+        args = ["--ff-only"]

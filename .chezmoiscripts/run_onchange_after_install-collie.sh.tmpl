@@ -1,3 +1,4 @@
+{{- if and (hasKey . "collie") .collie (lookPath "herdr") -}}
 #!/bin/sh
 # Collie (phone bridge for the Herdr agent herd) opens a network service and
 # tailscale-serve ingress, so it is installed only where it is wanted rather
@@ -5,15 +6,11 @@
 #
 # Opt in per machine by setting `collie = true` under [data] in the local
 # ~/.config/chezmoi/chezmoi.toml. The flag lives there, not here, so no
-# hostname or tailnet name ends up in this repo.
+# hostname or tailnet name ends up in this repo. The lookPath gate keeps the
+# script from recording as done on a machine that has the flag but no herdr.
 
 set -eu
 
-if ! command -v herdr >/dev/null 2>&1; then
-    exit 0
-fi
-
-{{ if and (hasKey . "collie") .collie -}}
 herdr plugin install AltanS/collie --yes
 herdr server reload-config >/dev/null 2>&1 || true
-{{- end }}
+{{ end -}}

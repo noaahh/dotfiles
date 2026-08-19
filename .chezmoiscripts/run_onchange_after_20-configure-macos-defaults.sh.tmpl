@@ -1,0 +1,11 @@
+{{- if eq .chezmoi.os "darwin" -}}
+#!/bin/bash
+# Applies the macOS defaults script whenever its content changes. The script
+# itself is managed at ~/.local/bin/macos-defaults so `macos-defaults --revert`
+# stays available by hand.
+# macos-defaults hash: {{ include "dot_local/bin/executable_macos-defaults" | sha256sum }}
+
+set -euo pipefail
+
+"$HOME/.local/bin/macos-defaults"
+{{ end -}}

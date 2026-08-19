@@ -53,6 +53,8 @@
 
 [gpg "ssh"]
 	allowedSignersFile = ~/.config/git/allowed_signers
-
+# pushInsteadOf, not insteadOf: a blanket https->ssh rewrite would also hit
+# anonymous clones chezmoi makes (the zap external), which fail on a fresh
+# machine with no GitHub ssh key. Pushes still go over ssh.
 [url "git@github.com:"]
-	insteadOf = https://github.com/
+	pushInsteadOf = https://github.com/

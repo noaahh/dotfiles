@@ -1,0 +1,21 @@
+name: Validate Brewfile
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - Brewfile
+  pull_request:
+    branches: [master]
+    paths:
+      - Brewfile
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate Brewfile syntax
+        run: brew bundle list --file=Brewfile

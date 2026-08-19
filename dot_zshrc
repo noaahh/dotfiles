@@ -11,6 +11,9 @@ done
 # Plugin-installed binaries land here (e.g. the shepherd symlink).
 export PATH="$HOME/bin:$PATH"
 
+# Managed scripts (e.g. macos-defaults) and uv/pipx-style installs.
+export PATH="$HOME/.local/bin:$PATH"
+
 export PATH="$HOME/.bun/bin:$PATH"
 
 # Keep the first occurrence of each PATH entry.

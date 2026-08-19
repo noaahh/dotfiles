@@ -1,10 +1,11 @@
+{{- if lookPath "herdr" -}}
 #!/bin/sh
+# Rendered only when herdr is on PATH. Without the gate, a machine without
+# herdr would record this run_onchange content as done and never install the
+# plugins once herdr appears; an empty render records no state, so the script
+# runs on the first apply after herdr shows up.
 
 set -eu
-
-if ! command -v herdr >/dev/null 2>&1; then
-    exit 0
-fi
 
 herdr plugin install thanhdat77/herdr-navigator --ref v0.3.2 --yes
 herdr plugin install jwarykowski/shepherd --yes
@@ -25,3 +26,4 @@ if command -v jq >/dev/null 2>&1; then
 fi
 
 herdr server reload-config >/dev/null 2>&1 || true
+{{ end -}}

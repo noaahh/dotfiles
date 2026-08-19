@@ -1,0 +1,18 @@
+{{- if eq .chezmoi.os "darwin" -}}
+#!/bin/bash
+# Reconciles installed packages against the Brewfile in the source root.
+# The hash below makes chezmoi rerun this whenever the Brewfile changes.
+# Brewfile hash: {{ include "Brewfile" | sha256sum }}
+
+set -euo pipefail
+
+# /opt/homebrew on Apple Silicon, /usr/local on Intel.
+for brew_path in /opt/homebrew/bin/brew /usr/local/bin/brew; do
+  if [[ -x "$brew_path" ]]; then
+    eval "$("$brew_path" shellenv)"
+    break
+  fi
+done
+
+brew bundle --file="{{ .chezmoi.sourceDir }}/Brewfile"
+{{ end -}}

@@ -1,8 +1,13 @@
 README.md
-{{- if not (lookPath "age") }}
-# No age binary/identity on this machine, so the encrypted ssh config cannot be
-# decrypted. Ignore it rather than letting `chezmoi status`/`apply` abort.
-# Install age and add an [age] stanza to chezmoi.toml to manage it again.
+# Input to the brew bundle script, not a file for the home directory.
+Brewfile
+{{- if not (get .chezmoi.config "encryption") }}
+# Encryption is not configured on this machine, so the encrypted ssh config
+# cannot be decrypted. Ignore it rather than letting `chezmoi status`/`apply`
+# abort. Gated on the config rather than `lookPath "age"` because the Brewfile
+# installs age everywhere. To manage it again, set top-level
+# `encryption = "age"` plus an [age] stanza (identity, recipient) in the local
+# chezmoi.toml; the [age] stanza alone does not flip this gate.
 .ssh/config
 .ssh/config.age
 {{- end }}

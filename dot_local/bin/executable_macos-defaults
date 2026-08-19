@@ -1,0 +1,183 @@
+#!/usr/bin/env bash
+#
+# macOS defaults for a keyboard-driven machine: strip animations that add
+# latency without adding information, make key repeat usable, and stop the
+# system fighting a tiling window manager. Idempotent, safe to re-run.
+#
+#   macos-defaults            apply
+#   macos-defaults --revert   restore stock macOS behaviour
+#
+# Note: the NSGlobalDomain keys are read by AppKit at app launch, so already
+# running apps keep the old behaviour until they are relaunched. Apps that
+# animate by hand (Safari, Mail, most Electron apps) ignore them entirely.
+
+set -euo pipefail
+
+if [[ "$(uname -s)" != "Darwin" ]]; then
+  echo "macos-defaults.sh: not macOS, skipping."
+  exit 0
+fi
+
+DOCK_KEYS=(
+  autohide-delay
+  autohide-time-modifier
+  launchanim
+  mineffect
+  expose-animation-duration
+  workspaces-swoosh-animation-off
+  mru-spaces
+  no-bouncing
+  springboard-show-duration
+  springboard-hide-duration
+  springboard-page-duration
+)
+
+GLOBAL_KEYS=(
+  KeyRepeat
+  InitialKeyRepeat
+  ApplePressAndHoldEnabled
+  AppleKeyboardUIMode
+  NSAutomaticQuoteSubstitutionEnabled
+  NSAutomaticDashSubstitutionEnabled
+  NSAutomaticPeriodSubstitutionEnabled
+  NSWindowShouldDragOnGesture
+  NSQuitAlwaysKeepsWindows
+  NSNavPanelExpandedStateForSaveMode
+  NSNavPanelExpandedStateForSaveMode2
+  PMPrintingExpandedStateForPrint
+  PMPrintingExpandedStateForPrint2
+  NSDocumentSaveNewDocumentsToCloud
+  NSAutomaticWindowAnimationsEnabled
+  NSWindowResizeTime
+  NSToolbarFullScreenAnimationDuration
+  NSBrowserColumnAnimationSpeedMultiplier
+  QLPanelAnimationDuration
+  com.apple.springing.enabled
+  com.apple.springing.delay
+)
+
+revert() {
+  echo "Reverting macOS defaults..."
+  for key in "${DOCK_KEYS[@]}"; do
+    defaults delete com.apple.dock "$key" 2>/dev/null || true
+  done
+  for key in "${GLOBAL_KEYS[@]}"; do
+    defaults delete -g "$key" 2>/dev/null || true
+  done
+  defaults delete com.apple.finder DisableAllAnimations 2>/dev/null || true
+  for key in AppleShowAllExtensions ShowPathbar FXDefaultSearchScope \
+             FXEnableExtensionChangeWarning; do
+    defaults delete com.apple.finder "$key" 2>/dev/null || true
+  done
+  for key in location type disable-shadow; do
+    defaults delete com.apple.screencapture "$key" 2>/dev/null || true
+  done
+  defaults delete com.apple.sound.uiaudio enabled 2>/dev/null || true
+  killall Dock 2>/dev/null || true
+  killall Finder 2>/dev/null || true
+  killall SystemUIServer 2>/dev/null || true
+  echo "Reverted. Log out and back in for the global settings to fully apply."
+}
+
+apply() {
+  echo "Applying macOS defaults..."
+
+  # Dock show/hide. The delay is the bigger win of the two.
+  defaults write com.apple.dock autohide-delay -float 0
+  defaults write com.apple.dock autohide-time-modifier -float 0.15
+
+  # No bounce when an app launches; scale beats the genie minimize.
+  defaults write com.apple.dock launchanim -bool false
+  defaults write com.apple.dock mineffect -string scale
+
+  # Mission Control and space switching.
+  defaults write com.apple.dock expose-animation-duration -float 0.1
+  defaults write com.apple.dock workspaces-swoosh-animation-off -bool true
+
+  # Launchpad open, close and paging.
+  defaults write com.apple.dock springboard-show-duration -float 0.1
+  defaults write com.apple.dock springboard-hide-duration -float 0.1
+  defaults write com.apple.dock springboard-page-duration -float 0.1
+
+  # AppKit: window open/close, resize, sheets, Quick Look.
+  defaults write -g NSAutomaticWindowAnimationsEnabled -bool false
+  defaults write -g NSWindowResizeTime -float 0.001
+  defaults write -g NSToolbarFullScreenAnimationDuration -float 0
+  defaults write -g NSBrowserColumnAnimationSpeedMultiplier -float 0
+  defaults write -g QLPanelAnimationDuration -float 0
+
+  # Spring-loaded folders open on hover instead of after half a second.
+  defaults write -g com.apple.springing.enabled -bool true
+  defaults write -g com.apple.springing.delay -float 0
+
+  # Largely a no-op on recent macOS, harmless to keep.
+  defaults write com.apple.finder DisableAllAnimations -bool true
+
+  # --- Keyboard -----------------------------------------------------------
+  # Holding a key repeats it instead of opening the accent picker. Without
+  # this, hjkl navigation and any held key are unusable.
+  defaults write -g ApplePressAndHoldEnabled -bool false
+
+  # Fastest repeat the UI exposes is 2 / 15; these go below that floor.
+  defaults write -g KeyRepeat -int 1
+  defaults write -g InitialKeyRepeat -int 10
+
+  # Tab reaches every control in dialogs, not just text fields and lists.
+  defaults write -g AppleKeyboardUIMode -int 3
+
+  # Substitutions that quietly corrupt code and shell commands.
+  defaults write -g NSAutomaticQuoteSubstitutionEnabled -bool false
+  defaults write -g NSAutomaticDashSubstitutionEnabled -bool false
+  defaults write -g NSAutomaticPeriodSubstitutionEnabled -bool false
+
+  # --- Tiling window manager ----------------------------------------------
+  # Stop macOS reordering Spaces by recency, which desyncs a tiling WM's
+  # fixed workspace numbers from the ones the system thinks it has.
+  defaults write com.apple.dock mru-spaces -bool false
+
+  # --- Windows and dialogs ------------------------------------------------
+  # Ctrl+Cmd drag moves a window from anywhere in it, not just the title bar.
+  # Worth a lot when a tiling WM leaves some windows floating.
+  defaults write -g NSWindowShouldDragOnGesture -bool true
+
+  # Launching an app gives a clean slate instead of restoring old windows.
+  defaults write -g NSQuitAlwaysKeepsWindows -bool false
+
+  # Save and print dialogs open expanded rather than in the cramped sheet.
+  defaults write -g NSNavPanelExpandedStateForSaveMode -bool true
+  defaults write -g NSNavPanelExpandedStateForSaveMode2 -bool true
+  defaults write -g PMPrintingExpandedStateForPrint -bool true
+  defaults write -g PMPrintingExpandedStateForPrint2 -bool true
+
+  # Default new documents to the local disk, not iCloud Drive.
+  defaults write -g NSDocumentSaveNewDocumentsToCloud -bool false
+
+  # No icon bouncing, and no click/volume sound effects.
+  defaults write com.apple.dock no-bouncing -bool true
+  defaults write com.apple.sound.uiaudio enabled -bool false
+
+  # --- Finder -------------------------------------------------------------
+  defaults write com.apple.finder AppleShowAllExtensions -bool true
+  defaults write com.apple.finder ShowPathbar -bool true
+  # Search the current folder rather than the whole Mac.
+  defaults write com.apple.finder FXDefaultSearchScope -string "SCcf"
+  defaults write com.apple.finder FXEnableExtensionChangeWarning -bool false
+
+  # --- Screenshots --------------------------------------------------------
+  mkdir -p "$HOME/Pictures/Screenshots"
+  defaults write com.apple.screencapture location -string "$HOME/Pictures/Screenshots"
+  defaults write com.apple.screencapture type -string "png"
+  defaults write com.apple.screencapture disable-shadow -bool true
+
+  killall Dock 2>/dev/null || true
+  killall Finder 2>/dev/null || true
+  killall SystemUIServer 2>/dev/null || true
+  echo "Done. Log out and back in for the global settings to fully apply."
+  echo "For the last of it, turn on System Settings > Accessibility > Display > Reduce Motion."
+}
+
+case "${1:-}" in
+  --revert) revert ;;
+  "")       apply ;;
+  *)        echo "usage: $0 [--revert]" >&2; exit 64 ;;
+esac

@@ -1,0 +1,20 @@
+{{/* Generates the machine-local ~/.config/chezmoi/chezmoi.toml on
+`chezmoi init`. The *Once prompts only ask when the value is missing from the
+existing config, so re-running init keeps prior answers. Machine-identifying
+values and capability opt-ins live in the generated file, never in this repo. */}}
+{{- $email := promptStringOnce . "email" "Git email" -}}
+{{- $name := promptStringOnce . "name" "Git name" -}}
+{{- $collie := promptBoolOnce . "collie" "Run the Collie phone bridge on this machine" false -}}
+
+[data]
+    email = {{ $email | quote }}
+    name = {{ $name | quote }}
+    # Collie (phone bridge) opt-in; the flag lives here so no hostname or
+    # tailnet name is published in the repo.
+    collie = {{ $collie }}
+
+# To manage the encrypted ssh config, uncomment and add an identity:
+# encryption = "age"
+# [age]
+#     identity = "~/.config/chezmoi/key.txt"
+#     recipient = "age1..."

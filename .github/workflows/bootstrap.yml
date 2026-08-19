@@ -38,4 +38,3 @@ jobs:
           grep -q "ci@example.invalid" "$HOME/.gitconfig"
           test -f "$HOME/.local/share/zap/zap.zsh"
           test -f "$HOME/Library/LaunchAgents/com.noaahh.dotfiles-drift.plist"
-          test ! -f "$HOME/Library/LaunchAgents/com.noaahh.mcp-clickhouse.plist"

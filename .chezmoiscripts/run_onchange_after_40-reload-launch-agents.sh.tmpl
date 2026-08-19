@@ -1,15 +1,14 @@
 {{- if eq .chezmoi.os "darwin" -}}
 #!/bin/bash
 # Reloads the managed launch agents whenever their definitions change.
-# Agents whose plist is not present on this machine (e.g. mcp-clickhouse
-# where the env file is missing, see .chezmoiignore) are skipped.
-# mcp-clickhouse hash: {{ include "private_Library/LaunchAgents/com.noaahh.mcp-clickhouse.plist.tmpl" | sha256sum }}
+# MCP server agents (mcp-clickhouse, wiki-mcp) are deliberately machine-local
+# and unmanaged; only dotfiles-owned agents belong here.
 # dotfiles-drift hash: {{ include "private_Library/LaunchAgents/com.noaahh.dotfiles-drift.plist.tmpl" | sha256sum }}
 
 set -euo pipefail
 
 uid="$(id -u)"
-for label in com.noaahh.mcp-clickhouse com.noaahh.dotfiles-drift; do
+for label in com.noaahh.dotfiles-drift; do
   plist="$HOME/Library/LaunchAgents/$label.plist"
   [ -f "$plist" ] || continue
   launchctl bootout "gui/$uid/$label" 2>/dev/null || true

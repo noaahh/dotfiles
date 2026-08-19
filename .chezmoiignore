@@ -1,11 +1,6 @@
 README.md
 # Input to the brew bundle script, not a file for the home directory.
 Brewfile
-{{- if not (stat (joinPath .chezmoi.homeDir ".config/mcp-clickhouse/.env")) }}
-# The MCP ClickHouse launch agent only makes sense on a machine that has its
-# machine-local credentials file; without it the service would crash-loop.
-Library/LaunchAgents/com.noaahh.mcp-clickhouse.plist
-{{- end }}
 {{- if not (get .chezmoi.config "encryption") }}
 # Encryption is not configured on this machine, so the encrypted ssh config
 # cannot be decrypted. Ignore it rather than letting `chezmoi status`/`apply`

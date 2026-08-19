@@ -7,6 +7,10 @@
 
 set -eu
 
+# Plugin builds need the mise runtimes (shepherd builds with go); chezmoi
+# runs this under sh, where .zshenv never loads the shims.
+export PATH="$HOME/.local/share/mise/shims:/opt/homebrew/bin:/usr/local/bin:$PATH"
+
 herdr plugin install thanhdat77/herdr-navigator --ref v0.3.2 --yes
 herdr plugin install jwarykowski/shepherd --yes
 herdr plugin install smarzban/herdr-file-viewer --yes

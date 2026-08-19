@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.noaahh.mcp-clickhouse</string>
+
+    <!-- One shared HTTP MCP server for every agent session, replacing the
+         per-session `uv run` stdio spawns. Those held the uv cache lock for
+         their whole lifetime, which made `uv cache prune` impossible while
+         any session was open. Credentials live in the machine-local env
+         file; .chezmoiignore skips this agent on machines without it. -->
+    <key>ProgramArguments</key>
+    <array>
+        <string>/opt/homebrew/bin/uv</string>
+        <string>run</string>
+        <string>--env-file</string>
+        <string>{{ .chezmoi.homeDir }}/.config/mcp-clickhouse/.env</string>
+        <string>--with</string>
+        <string>mcp-clickhouse</string>
+        <string>--python</string>
+        <string>3.10</string>
+        <string>mcp-clickhouse</string>
+    </array>
+
+    <key>WorkingDirectory</key>
+    <string>{{ .chezmoi.homeDir }}</string>
+
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>PATH</key>
+        <string>/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+        <key>CLICKHOUSE_MCP_SERVER_TRANSPORT</key>
+        <string>http</string>
+        <!-- Loopback only. Nothing off this machine can reach the port. -->
+        <key>CLICKHOUSE_MCP_BIND_HOST</key>
+        <string>127.0.0.1</string>
+        <key>CLICKHOUSE_MCP_BIND_PORT</key>
+        <string>8765</string>
+        <!-- Acceptable because the bind is loopback only. Swap for
+             CLICKHOUSE_MCP_AUTH_TOKEN if the bind host ever changes. -->
+        <key>CLICKHOUSE_MCP_AUTH_DISABLED</key>
+        <string>true</string>
+    </dict>
+
+    <key>RunAtLoad</key>
+    <true/>
+    <key>KeepAlive</key>
+    <dict>
+        <key>SuccessfulExit</key>
+        <false/>
+    </dict>
+    <key>ThrottleInterval</key>
+    <integer>5</integer>
+
+    <key>StandardOutPath</key>
+    <string>{{ .chezmoi.homeDir }}/Library/Logs/mcp-clickhouse.log</string>
+    <key>StandardErrorPath</key>
+    <string>{{ .chezmoi.homeDir }}/Library/Logs/mcp-clickhouse.log</string>
+</dict>
+</plist>

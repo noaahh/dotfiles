@@ -8,10 +8,20 @@
 
 set -euo pipefail
 
+uid="$(id -u)"
 for label in com.noaahh.mcp-clickhouse com.noaahh.dotfiles-drift; do
   plist="$HOME/Library/LaunchAgents/$label.plist"
   [ -f "$plist" ] || continue
-  launchctl bootout "gui/$(id -u)/$label" 2>/dev/null || true
-  launchctl bootstrap "gui/$(id -u)" "$plist"
+  launchctl bootout "gui/$uid/$label" 2>/dev/null || true
+  # bootout is asynchronous; an immediate bootstrap can race it with a
+  # spurious "Input/output error", so retry briefly.
+  for _ in 1 2 3 4 5; do
+    launchctl bootstrap "gui/$uid" "$plist" 2>/dev/null && break
+    sleep 1
+  done
+  launchctl print "gui/$uid/$label" >/dev/null 2>&1 || {
+    echo "failed to load $label" >&2
+    exit 1
+  }
 done
 {{ end -}}

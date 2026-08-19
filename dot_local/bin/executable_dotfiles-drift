@@ -1,0 +1,66 @@
+#!/bin/bash
+#
+# Weekly drift report between this machine and the dotfiles repo, in both
+# directions. The live machine is the ground truth; this notices when repo
+# and machine disagree so the difference gets reconciled instead of rotting.
+# Run by the com.noaahh.dotfiles-drift launch agent; safe to run by hand.
+
+set -u
+export PATH="/opt/homebrew/bin:/usr/local/bin:$HOME/bin:$HOME/.local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+
+report=""
+add() { report+="## $1"$'\n'"$2"$'\n\n'; }
+
+src="$(chezmoi source-path 2>/dev/null)"
+
+# 1. chezmoi: source vs live files.
+s="$(chezmoi status 2>&1)"
+[ -n "$s" ] && add "chezmoi status (apply pending or local edits)" "$s"
+
+# 2. Brewfile, both directions. NO_UPGRADE so outdated versions do not count
+# as drift; only genuinely missing entries do.
+if [ -n "$src" ] && [ -f "$src/Brewfile" ]; then
+  missing="$(HOMEBREW_BUNDLE_NO_UPGRADE=1 brew bundle check --file="$src/Brewfile" --verbose 2>/dev/null | grep '^→' || true)"
+  [ -n "$missing" ] && add "In Brewfile, not on machine" "$missing"
+  extra="$(brew bundle cleanup --file="$src/Brewfile" 2>/dev/null | sed -n '/^Would uninstall/,/^Would `brew cleanup`/p' | grep -v '^Would `brew cleanup`' || true)"
+  [ -n "$extra" ] && add "On machine, not in Brewfile" "$extra"
+fi
+
+# 3. herdr plugins vs the install script. Compares source repo names;
+# local plugins and the opt-in collie are excluded on both sides.
+if command -v herdr >/dev/null 2>&1 && command -v jq >/dev/null 2>&1 && [ -n "$src" ]; then
+  installed="$(herdr plugin list --json 2>/dev/null \
+    | jq -r '.result.plugins[].source | if type == "object" then (.repo // empty) else . end' \
+    | grep -v -e '^local$' -e '^collie$' | sort -u)"
+  scripted="$(grep -h 'herdr plugin install' "$src/.chezmoiscripts/run_onchange_after_install-herdr-plugins.sh.tmpl" 2>/dev/null \
+    | awk '{print $4}' | sed 's|.*/||' | sort -u)"
+  plugdiff="$(comm -3 <(echo "$scripted") <(echo "$installed") \
+    | sed 's/^\t/installed but not scripted: /; s/^[^i]/scripted but not installed: &/' || true)"
+  [ -n "$plugdiff" ] && add "herdr plugins" "$plugdiff"
+fi
+
+# 4. macOS defaults sentinel keys. A macOS update resetting these means the
+# whole macos-defaults set likely needs a re-apply.
+check_default() {
+  got="$(defaults read "$1" "$2" 2>/dev/null)"
+  [ "$got" = "$3" ] || report+="defaults: $1 $2 is '${got:-unset}', want $3"$'\n'
+}
+check_default -g KeyRepeat 1
+check_default -g ApplePressAndHoldEnabled 0
+check_default com.apple.dock autohide-delay 0
+check_default com.apple.dock mru-spaces 0
+
+ts="$(date '+%Y-%m-%d %H:%M')"
+if [ -n "$report" ]; then
+  printf '=== %s: drift detected ===\n%s\n' "$ts" "$report"
+  if command -v alerter >/dev/null 2>&1; then
+    alerter -title "dotfiles drift" \
+      -message "Repo and machine disagree. Run dotfiles-drift for details, converge to reconcile." \
+      -timeout 15 >/dev/null 2>&1 || true
+  else
+    osascript -e 'display notification "Run dotfiles-drift for details." with title "dotfiles drift"' 2>/dev/null || true
+  fi
+  exit 1
+else
+  echo "=== $ts: clean ==="
+fi

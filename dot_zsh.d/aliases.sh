@@ -13,3 +13,8 @@ alias awk="gawk"
 # CHEZMOI_SOURCE_DIR or a non-default install.
 alias cz='cd "$(chezmoi source-path)"'
 alias dotfiles='cd "$(chezmoi source-path)"'
+
+# Pull the dotfiles repo and reconcile the whole machine against it:
+# packages (brew bundle, mas), runtimes (mise), macOS defaults, launch
+# agents, herdr plugins, dotfiles.
+alias converge="chezmoi update"

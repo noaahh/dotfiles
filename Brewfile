@@ -18,6 +18,7 @@ tap "vjeantet/tap"
 
 # CLI basics
 brew "bat"
+brew "mas"
 brew "btop"
 brew "coreutils"
 brew "fd"
@@ -153,6 +154,10 @@ cask "tailscale-app"
 # Fonts
 cask "font-geist-mono"
 cask "font-jetbrains-mono-nerd-font"
+
+# App Store
+mas "Amphetamine", id: 937984704
+mas "rcmd", id: 1596283165
 
 # VSCode Extensions
 vscode "charliermarsh.ruff"

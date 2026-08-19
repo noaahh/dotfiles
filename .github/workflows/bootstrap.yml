@@ -1,0 +1,41 @@
+name: Bootstrap
+
+# Honest fresh-machine test: init from this checkout with headless prompts
+# and apply everything except scripts and encrypted entries. No `|| true`;
+# a template error, a broken external, or a bad ignore rule fails the job.
+# Package installs are exercised on real machines, not here.
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
+
+jobs:
+  apply:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install chezmoi
+        run: brew install chezmoi
+
+      - name: Init from this checkout
+        run: >
+          chezmoi init --source "$PWD"
+          --promptString "Git email"=ci@example.invalid,"Git name"=CI
+          --promptBool "Run the Collie phone bridge on this machine"=false
+
+      - name: Apply (files and externals, no scripts)
+        run: chezmoi apply --source "$PWD" --exclude scripts,encrypted --force
+
+      - name: Verify rendered results
+        run: |
+          test -x "$HOME/.local/bin/macos-defaults"
+          test -x "$HOME/.local/bin/dotfiles-drift"
+          grep -q converge "$HOME/.zsh.d/aliases.sh"
+          grep -q "ci@example.invalid" "$HOME/.gitconfig"
+          test -f "$HOME/.local/share/zap/zap.zsh"
+          test -f "$HOME/Library/LaunchAgents/com.noaahh.dotfiles-drift.plist"
+          test ! -f "$HOME/Library/LaunchAgents/com.noaahh.mcp-clickhouse.plist"

@@ -8,7 +8,7 @@ tap "bjarneo/cliamp"
 tap "cloudmanic/spice-edit", "https://github.com/cloudmanic/spice-edit"
 tap "felixkratz/formulae", "https://github.com/FelixKratz/homebrew-formulae"
 tap "jwarykowski/tap"
-tap "nikitabobko/tap"
+tap "nikitabobko/tap", trusted: { casks: ["aerospace"] }
 tap "oven-sh/bun"
 tap "schpet/tap"
 tap "snowplow/taps"

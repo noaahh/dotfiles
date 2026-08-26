@@ -1,0 +1,71 @@
+#!/usr/bin/env bash
+# ws-slot <slot> [switch|move|next|prev|throw|throw-all]
+# Monitor-aware workspace slots: each display owns nine workspaces
+# (main: 1-9, secondary: 11-19 — same LAST digit = same slot). A number
+# key acts on the focused monitor's slot N.
+set -euo pipefail
+A="$(command -v aerospace || echo /opt/homebrew/bin/aerospace)"
+slot="${1:-}"
+op="${2:-switch}"
+
+pick() { # monitor-id, slot -> that monitor's workspace ending in slot
+  "$A" list-workspaces --monitor "$1" \
+    | awk -v s="$2" 'substr($0, length($0)) == s { print; exit }'
+}
+
+mon="$("$A" list-monitors --focused --format '%{monitor-id}')"
+# The workspace currently shown on the focused monitor. NOT
+# `list-workspaces --focused`: on this AeroSpace version (0.21.3-Beta)
+# that returns one line PER MONITOR (the visible workspace on each),
+# not just the truly-focused one — breaks on any multi-monitor setup.
+cur_ws() { "$A" list-workspaces --monitor "$mon" --visible; }
+case "$op" in
+  switch)
+    ws="$(pick "$mon" "$slot")"
+    [ -n "$ws" ] && "$A" workspace "$ws"
+    ;;
+  move)
+    ws="$(pick "$mon" "$slot")"
+    [ -n "$ws" ] && "$A" move-node-to-workspace --focus-follows-window "$ws"
+    ;;
+  next | prev) # cycle within the workspaces that BELONG to this monitor
+    cur="$(cur_ws)"
+    nmon="$("$A" list-monitors | wc -l | tr -d ' ')"
+    if [ "$nmon" = 1 ]; then
+      all="$("$A" list-workspaces --monitor "$mon" | grep -E '^[0-9]$' | tr '\n' ' ')"
+    else
+      all="$("$A" list-workspaces --monitor "$mon" | tr '\n' ' ')"
+    fi
+    target="$(printf '%s\n' $all | awk -v cur="$cur" -v dir="$op" '
+      { ws[NR] = $0 }
+      END {
+        if (NR == 0) exit
+        at = 0
+        for (i = 1; i <= NR; i++) if (ws[i] == cur) at = i
+        if (at == 0) { print (dir == "prev" ? ws[NR] : ws[1]); exit }
+        i = (dir == "prev") ? (at == 1 ? NR : at - 1) : (at == NR ? 1 : at + 1)
+        print ws[i]
+      }')"
+    [ -n "$target" ] && "$A" workspace "$target"
+    ;;
+  throw-all) # EVERY window of the focused workspace to the twin slot
+    cur="$(cur_ws)"
+    s="${cur: -1}"
+    other="$("$A" list-monitors --format '%{monitor-id}' | grep -vx "$mon" | head -1 || true)"
+    [ -n "$other" ] || exit 0
+    ws="$(pick "$other" "$s")"
+    [ -n "$ws" ] || exit 0
+    "$A" list-windows --workspace "$cur" --format '%{window-id}' | while read -r wid; do
+      [ -n "$wid" ] && "$A" move-node-to-workspace --window-id "$wid" "$ws"
+    done
+    "$A" workspace "$ws"
+    ;;
+  throw) # focused WINDOW to the same slot on the other monitor
+    cur="$(cur_ws)"
+    s="${cur: -1}"
+    other="$("$A" list-monitors --format '%{monitor-id}' | grep -vx "$mon" | head -1 || true)"
+    [ -n "$other" ] || exit 0
+    ws="$(pick "$other" "$s")"
+    [ -n "$ws" ] && "$A" move-node-to-workspace --focus-follows-window "$ws"
+    ;;
+esac

@@ -1,20 +1,42 @@
-enable-normalization-flatten-containers = true
-enable-normalization-opposite-orientation-for-nested-containers = true
+# Revert to the previous config any time:
+#   cp ~/.config/aerospace/aerospace.toml.pre-omacosy-backup ~/.config/aerospace/aerospace.toml
+#   aerospace reload-config
+#
+# Monitor-aware workspace switching, float surfacing and in-workspace
+# Alt+Tab are handled by the scripts in ~/.config/aerospace/bin/
+# (ws-slot, float-next, win-cycle) — pure `aerospace` CLI + awk, no
+# extra daemon needed.
 
-on-focus-changed = 'move-mouse window-lazy-center'
+config-version = 2
+persistent-workspaces = ['1', '2', '3', '4', '5', '6', '7', '8', '9',
+  '11', '12', '13', '14', '15', '16', '17', '18', '19']
+
+start-at-login = true
+after-startup-command = []
 
 automatically-unhide-macos-hidden-apps = true
 
-after-startup-command = [
-]
+# flatten is OFF so `split` (used by the join mode below) keeps its own
+# container instead of being dissolved into the parent.
+# opposite-orientation is OFF so a manual split-toggle flips only the
+# targeted pair, not every nested container above it.
+enable-normalization-flatten-containers = false
+enable-normalization-opposite-orientation-for-nested-containers = false
+
+accordion-padding = 30
+default-root-container-layout = 'tiles'
+default-root-container-orientation = 'auto'
+
+on-focus-changed = ['move-mouse window-lazy-center']
+on-focused-monitor-changed = ['move-mouse monitor-lazy-center']
 
 [gaps]
-outer.top = 4
-outer.bottom = 4
-outer.left = 4
-outer.right = 4
-inner.horizontal = 4
-inner.vertical = 4
+outer.top = 8
+outer.bottom = 8
+outer.left = 8
+outer.right = 8
+inner.horizontal = 8
+inner.vertical = 8
 
 [[on-window-detected]]
     if.app-id = 'com.apple.systempreferences'
@@ -49,53 +71,95 @@ inner.vertical = 4
     run = 'move-node-to-workspace 5'
 
 [mode.main.binding]
-    ctrl-alt-cmd-t = "exec-and-forget open -n -a kitty"
-    ctrl-alt-cmd-e = "exec-and-forget open -n -a helium"
-    ctrl-alt-cmd-q = "close --quit-if-last-window"
+    # Terminal / browser
+    ctrl-alt-cmd-enter = "exec-and-forget open -n -a kitty"
+    ctrl-alt-cmd-shift-enter = "exec-and-forget open -a helium"
 
-    ctrl-alt-cmd-j =         'focus --boundaries-action wrap-around-the-workspace left'
-    ctrl-alt-cmd-k =         'focus --boundaries-action wrap-around-the-workspace down'
-    ctrl-alt-cmd-l =         'focus --boundaries-action wrap-around-the-workspace up'
-    ctrl-alt-cmd-semicolon = 'focus --boundaries-action wrap-around-the-workspace right'
+    # Launcher
+    ctrl-alt-cmd-space = "exec-and-forget open -a Raycast"
 
-    ctrl-alt-cmd-shift-j = 'move left'
-    ctrl-alt-cmd-shift-k = 'move down'
-    ctrl-alt-cmd-shift-l = 'move up'
-    ctrl-alt-cmd-shift-semicolon = 'move right'
+    # Close
+    ctrl-alt-cmd-w = 'close'
+    ctrl-alt-cmd-q = 'close --quit-if-last-window'
 
-    ctrl-alt-cmd-shift-period = "move-workspace-to-monitor next"
-    ctrl-alt-cmd-shift-comma  = "move-workspace-to-monitor prev"
+    # Focus / move (arrows, replacing the old jkl; scheme — this is the
+    # main thing to get a feel for)
+    ctrl-alt-cmd-left =  'focus --boundaries-action wrap-around-the-workspace left'
+    ctrl-alt-cmd-down =  'focus --boundaries-action wrap-around-the-workspace down'
+    ctrl-alt-cmd-up =    'focus --boundaries-action wrap-around-the-workspace up'
+    ctrl-alt-cmd-right = 'focus --boundaries-action wrap-around-the-workspace right'
 
-    ctrl-alt-cmd-f = 'fullscreen'
+    ctrl-alt-cmd-shift-left =  'move left'
+    ctrl-alt-cmd-shift-down =  'move down'
+    ctrl-alt-cmd-shift-up =    'move up'
+    ctrl-alt-cmd-shift-right = 'move right'
 
-    ctrl-alt-cmd-s = 'layout v_accordion'
-    ctrl-alt-cmd-w = 'layout h_accordion'
+    # Layout
+    ctrl-alt-cmd-t = 'layout floating tiling'
+    ctrl-alt-cmd-j = 'layout tiles horizontal vertical'
+    ctrl-alt-cmd-f = 'fullscreen --no-outer-gaps'
+    ctrl-alt-cmd-n = 'macos-native-fullscreen'
 
-    ctrl-alt-cmd-shift-space = 'layout floating tiling'
-    ctrl-alt-cmd-shift-f = 'flatten-workspace-tree'
+    # Surface next float on this workspace
+    ctrl-alt-cmd-s = "exec-and-forget $HOME/.config/aerospace/bin/float-next"
 
-    ctrl-alt-cmd-shift-n = 'move-node-to-monitor next'
-    ctrl-alt-cmd-shift-p = 'move-node-to-monitor prev'
+    # Resize
+    ctrl-alt-cmd-minus = 'resize smart -50'
+    ctrl-alt-cmd-equal = 'resize smart +50'
 
-    ctrl-alt-cmd-tab = 'workspace-back-and-forth'
+    # Workspaces — monitor-aware slots: main display owns 1-9, a
+    # secondary display owns 11-19 with the same last digit
+    ctrl-alt-cmd-1 = "exec-and-forget $HOME/.config/aerospace/bin/ws-slot 1"
+    ctrl-alt-cmd-2 = "exec-and-forget $HOME/.config/aerospace/bin/ws-slot 2"
+    ctrl-alt-cmd-3 = "exec-and-forget $HOME/.config/aerospace/bin/ws-slot 3"
+    ctrl-alt-cmd-4 = "exec-and-forget $HOME/.config/aerospace/bin/ws-slot 4"
+    ctrl-alt-cmd-5 = "exec-and-forget $HOME/.config/aerospace/bin/ws-slot 5"
+    ctrl-alt-cmd-6 = "exec-and-forget $HOME/.config/aerospace/bin/ws-slot 6"
+    ctrl-alt-cmd-7 = "exec-and-forget $HOME/.config/aerospace/bin/ws-slot 7"
+    ctrl-alt-cmd-8 = "exec-and-forget $HOME/.config/aerospace/bin/ws-slot 8"
+    ctrl-alt-cmd-9 = "exec-and-forget $HOME/.config/aerospace/bin/ws-slot 9"
 
-    ctrl-alt-cmd-1 = 'workspace 1'
-    ctrl-alt-cmd-2 = 'workspace 2'
-    ctrl-alt-cmd-3 = 'workspace 3'
-    ctrl-alt-cmd-4 = 'workspace 4'
-    ctrl-alt-cmd-5 = 'workspace 5'
-    ctrl-alt-cmd-6 = 'workspace 6'
+    ctrl-alt-cmd-shift-1 = "exec-and-forget $HOME/.config/aerospace/bin/ws-slot 1 move"
+    ctrl-alt-cmd-shift-2 = "exec-and-forget $HOME/.config/aerospace/bin/ws-slot 2 move"
+    ctrl-alt-cmd-shift-3 = "exec-and-forget $HOME/.config/aerospace/bin/ws-slot 3 move"
+    ctrl-alt-cmd-shift-4 = "exec-and-forget $HOME/.config/aerospace/bin/ws-slot 4 move"
+    ctrl-alt-cmd-shift-5 = "exec-and-forget $HOME/.config/aerospace/bin/ws-slot 5 move"
+    ctrl-alt-cmd-shift-6 = "exec-and-forget $HOME/.config/aerospace/bin/ws-slot 6 move"
+    ctrl-alt-cmd-shift-7 = "exec-and-forget $HOME/.config/aerospace/bin/ws-slot 7 move"
+    ctrl-alt-cmd-shift-8 = "exec-and-forget $HOME/.config/aerospace/bin/ws-slot 8 move"
+    ctrl-alt-cmd-shift-9 = "exec-and-forget $HOME/.config/aerospace/bin/ws-slot 9 move"
 
-    ctrl-alt-cmd-shift-1 = 'move-node-to-workspace 1'
-    ctrl-alt-cmd-shift-2 = 'move-node-to-workspace 2'
-    ctrl-alt-cmd-shift-3 = 'move-node-to-workspace 3'
-    ctrl-alt-cmd-shift-4 = 'move-node-to-workspace 4'
-    ctrl-alt-cmd-shift-5 = 'move-node-to-workspace 5'
-    ctrl-alt-cmd-shift-6 = 'move-node-to-workspace 6'
+    # Cycle workspaces within the focused monitor's own slot set
+    ctrl-alt-cmd-tab =       "exec-and-forget $HOME/.config/aerospace/bin/ws-slot 0 next"
+    ctrl-alt-cmd-shift-tab = "exec-and-forget $HOME/.config/aerospace/bin/ws-slot 0 prev"
+    ctrl-alt-cmd-b = 'workspace-back-and-forth'
 
+    # Cycle windows WITHIN the workspace — plain alt-tab, since Cmd+Tab
+    # (app switching) is untouched and nothing else on macOS uses bare
+    # Option+Tab
+    alt-tab =       "exec-and-forget $HOME/.config/aerospace/bin/win-cycle next"
+    alt-shift-tab = "exec-and-forget $HOME/.config/aerospace/bin/win-cycle prev"
+
+    # Cycle focus between monitors
+    ctrl-alt-tab = 'focus-monitor next --wrap-around'
+
+    # Throw window / whole workspace to the other monitor's twin slot
+    ctrl-alt-cmd-shift-o =     "exec-and-forget $HOME/.config/aerospace/bin/ws-slot 0 throw"
+    ctrl-alt-cmd-shift-space = "exec-and-forget $HOME/.config/aerospace/bin/ws-slot 0 throw-all"
+
+    # Files
+    ctrl-alt-cmd-shift-f = 'exec-and-forget open ~'
+
+    # Lock screen (closest native equivalent without extra tooling —
+    # sleeps the display, which prompts for a password on wake if that's
+    # configured in System Settings)
+    ctrl-alt-cmd-shift-l = 'exec-and-forget pmset displaysleepnow'
+
+    # Modes
     ctrl-alt-cmd-shift-c = 'reload-config'
     ctrl-alt-cmd-r = 'mode resize'
     ctrl-alt-cmd-g = 'mode join'
+    ctrl-alt-cmd-shift-semicolon = 'mode service'
 
 [mode.join.binding]
     j = ['join-with left', 'mode main']
@@ -110,5 +174,32 @@ inner.vertical = 4
     j = 'resize height +50'
     k = 'resize height -50'
     l = 'resize width +50'
+    minus = 'resize smart -50'
+    equal = 'resize smart +50'
     enter = 'mode main'
     esc = 'mode main'
+
+[mode.service.binding]
+    esc = ['reload-config', 'mode main']
+    r = ['flatten-workspace-tree', 'mode main']
+    backspace = ['close-all-windows-but-current', 'mode main']
+
+[workspace-to-monitor-force-assignment]
+1 = ['main']
+2 = ['main']
+3 = ['main']
+4 = ['main']
+5 = ['main']
+6 = ['main']
+7 = ['main']
+8 = ['main']
+9 = ['main']
+11 = ['secondary', 'main']
+12 = ['secondary', 'main']
+13 = ['secondary', 'main']
+14 = ['secondary', 'main']
+15 = ['secondary', 'main']
+16 = ['secondary', 'main']
+17 = ['secondary', 'main']
+18 = ['secondary', 'main']
+19 = ['secondary', 'main']

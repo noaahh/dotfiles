@@ -78,8 +78,7 @@ inner.vertical = 8
     ctrl-alt-cmd-w = 'close'
     ctrl-alt-cmd-q = 'close --quit-if-last-window'
 
-    # Focus / move (arrows, replacing the old jkl; scheme — this is the
-    # main thing to get a feel for)
+    # Focus / move (arrows, not jkl;)
     ctrl-alt-cmd-left =  'focus --boundaries-action wrap-around-the-workspace left'
     ctrl-alt-cmd-down =  'focus --boundaries-action wrap-around-the-workspace down'
     ctrl-alt-cmd-up =    'focus --boundaries-action wrap-around-the-workspace up'

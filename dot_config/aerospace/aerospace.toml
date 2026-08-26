@@ -1,8 +1,3 @@
-# Tracked in chezmoi; revert to the prior keybindings any time with:
-#   cd $(chezmoi source-path) && git log --oneline -- dot_config/aerospace
-#   git show <old-commit>:dot_config/aerospace/aerospace.toml > ~/.config/aerospace/aerospace.toml
-#   aerospace reload-config
-#
 # Monitor-aware workspace switching, float surfacing and in-workspace
 # Alt+Tab are handled by the scripts in ~/.config/aerospace/bin/
 # (ws-slot, float-next, win-cycle) — pure `aerospace` CLI + awk, no

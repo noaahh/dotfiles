@@ -1,0 +1,38 @@
+{{- if eq .chezmoi.os "darwin" -}}
+#!/bin/bash
+# 3-finger trackpad swipe between AeroSpace workspaces (native "swipe between
+# full-screen applications" is reassigned to 4 fingers in System Settings so
+# the two don't collide). Vanilla upstream
+# acsandmann/aerospace-swipe (source cloned by the .chezmoiexternal.toml
+# entry) builds fine unpatched on this OS version — the raw-multitouch
+# workaround omacosy carries is only needed on macOS 26.
+#
+# chezmoi only reruns a run_onchange_ script when its own rendered content
+# changes, not when the external source updates on its 168h refresh. So this
+# script self-heals on every apply by comparing binary mtime to source mtime,
+# but picking up an upstream update still needs an explicit
+# `chezmoi apply --refresh-externals` to force the re-pull first.
+
+set -euo pipefail
+
+SRC_DIR="$HOME/.local/share/aerospace-swipe"
+[ -d "$SRC_DIR/src" ] || exit 0
+
+BINARY="$SRC_DIR/AerospaceSwipe.app/Contents/MacOS/AerospaceSwipe"
+PLIST="$HOME/Library/LaunchAgents/com.acsandmann.swipe.plist"
+
+STALE=""
+if [ ! -x "$BINARY" ] || [ ! -f "$PLIST" ]; then
+  STALE=1
+elif find "$SRC_DIR/src" "$SRC_DIR/makefile" -newer "$BINARY" 2>/dev/null | grep -q .; then
+  STALE=1
+fi
+
+if [ -n "$STALE" ]; then
+  echo "Building aerospace-swipe (grant Accessibility when prompted)..."
+  launchctl unload "$PLIST" 2>/dev/null || true
+  ( cd "$SRC_DIR" && make all bundle install_plist )
+fi
+
+launchctl load "$PLIST" 2>/dev/null || true
+{{ end -}}

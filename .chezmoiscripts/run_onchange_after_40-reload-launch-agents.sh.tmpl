@@ -4,11 +4,12 @@
 # MCP server agents (mcp-clickhouse, wiki-mcp) are deliberately machine-local
 # and unmanaged; only dotfiles-owned agents belong here.
 # dotfiles-drift hash: {{ include "private_Library/LaunchAgents/com.noaahh.dotfiles-drift.plist.tmpl" | sha256sum }}
+# autoraise hash: {{ include "private_Library/LaunchAgents/com.sbmpost.autoraise.plist.tmpl" | sha256sum }}
 
 set -euo pipefail
 
 uid="$(id -u)"
-for label in com.noaahh.dotfiles-drift; do
+for label in com.noaahh.dotfiles-drift com.sbmpost.autoraise; do
   plist="$HOME/Library/LaunchAgents/$label.plist"
   [ -f "$plist" ] || continue
   launchctl bootout "gui/$uid/$label" 2>/dev/null || true

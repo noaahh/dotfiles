@@ -9,3 +9,22 @@
         args = ["--branch", "release-v1", "--depth", "1"]
     [".local/share/zap".pull]
         args = ["--ff-only"]
+
+# 3-finger trackpad swipe between AeroSpace workspaces. No brew formula; it's
+# a small C/ObjC source tree built by run_onchange_after_35-install-aerospace-swipe.
+# Vanilla upstream (no macOS-26 raw-multitouch patch needed on this OS version).
+[".local/share/aerospace-swipe"]
+    type = "git-repo"
+    url = "https://github.com/acsandmann/aerospace-swipe.git"
+    refreshPeriod = "168h"
+    [".local/share/aerospace-swipe".pull]
+        args = ["--ff-only"]
+
+# Focus-follows-mouse. No cask (removed from homebrew-cask); built from
+# source by run_onchange_after_36-install-autoraise.
+[".local/share/AutoRaise"]
+    type = "git-repo"
+    url = "https://github.com/sbmpost/AutoRaise.git"
+    refreshPeriod = "168h"
+    [".local/share/AutoRaise".pull]
+        args = ["--ff-only"]

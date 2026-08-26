@@ -1,0 +1,43 @@
+{{- if eq .chezmoi.os "darwin" -}}
+#!/bin/bash
+# Focus-follows-mouse (source cloned by the .chezmoiexternal.toml entry).
+# No cask exists for this; `make install` builds AutoRaise.app and copies it
+# to /Applications. run_onchange_after_40-reload-launch-agents also loads
+# com.sbmpost.autoraise, but only when the plist template itself changes —
+# a source-only rebuild here needs its own bootstrap, or the app stays
+# booted-out after the pre-rebuild bootout below.
+#
+# Same chezmoi caveat as the aerospace-swipe script: this only reruns when
+# its own content changes, not on the external's 168h refresh. Picking up an
+# upstream update needs `chezmoi apply --refresh-externals` first.
+
+set -euo pipefail
+
+SRC_DIR="$HOME/.local/share/AutoRaise"
+[ -f "$SRC_DIR/AutoRaise.mm" ] || exit 0
+
+APP="/Applications/AutoRaise.app"
+BINARY="$APP/Contents/MacOS/AutoRaise"
+
+STALE=""
+if [ ! -x "$BINARY" ]; then
+  STALE=1
+elif find "$SRC_DIR/AutoRaise.mm" "$SRC_DIR/makefile" -newer "$BINARY" 2>/dev/null | grep -q .; then
+  STALE=1
+fi
+
+if [ -n "$STALE" ]; then
+  echo "Building AutoRaise (grant Accessibility when prompted)..."
+  uid="$(id -u)"
+  launchctl bootout "gui/$uid/com.sbmpost.autoraise" 2>/dev/null || true
+  ( cd "$SRC_DIR" && make clean && make install )
+  codesign --force --deep --sign - "$APP" 2>/dev/null || true
+  plist="$HOME/Library/LaunchAgents/com.sbmpost.autoraise.plist"
+  if [ -f "$plist" ]; then
+    for _ in 1 2 3 4 5; do
+      launchctl bootstrap "gui/$uid" "$plist" 2>/dev/null && break
+      sleep 1
+    done
+  fi
+fi
+{{ end -}}

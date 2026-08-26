@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.sbmpost.autoraise</string>
+
+    <!-- Focus-follows-mouse. Reads {{ .chezmoi.homeDir }}/.config/AutoRaise/config.
+         See ~/.local/share/chezmoi/.chezmoiscripts/run_onchange_after_36-install-autoraise.sh.tmpl -->
+    <key>ProgramArguments</key>
+    <array>
+        <string>/Applications/AutoRaise.app/Contents/MacOS/AutoRaise</string>
+    </array>
+
+    <key>RunAtLoad</key>
+    <true/>
+    <key>KeepAlive</key>
+    <true/>
+
+    <key>StandardOutPath</key>
+    <string>{{ .chezmoi.homeDir }}/Library/Logs/autoraise.log</string>
+    <key>StandardErrorPath</key>
+    <string>{{ .chezmoi.homeDir }}/Library/Logs/autoraise.log</string>
+</dict>
+</plist>

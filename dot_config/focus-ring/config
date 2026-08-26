@@ -1,0 +1,6 @@
+# focus-ring config. Reloaded live on save.
+width = 4
+radius = 10
+gap = 0
+active_dark = 0xff7aa2f7
+active_light = 0xff2f5fb3

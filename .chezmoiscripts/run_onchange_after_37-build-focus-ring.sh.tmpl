@@ -1,0 +1,32 @@
+{{- if eq .chezmoi.os "darwin" -}}
+#!/bin/bash
+# Builds focus-ring (replaces JankyBorders — see ~/.config/focus-ring for
+# the source and rationale) and (re)loads its LaunchAgent. Needs no
+# permissions and no external dependencies beyond the Command Line Tools'
+# swiftc, so unlike aerospace-swipe there is no Accessibility grant to lose
+# on rebuild.
+# source hash: {{ include "dot_config/focus-ring/focus-ring.swift" | sha256sum }}
+# plist hash: {{ include "private_Library/LaunchAgents/com.noaahh.focus-ring.plist" | sha256sum }}
+
+set -euo pipefail
+
+SRC="$HOME/.config/focus-ring/focus-ring.swift"
+BIN="$HOME/.local/bin/focus-ring"
+PLIST="$HOME/Library/LaunchAgents/com.noaahh.focus-ring.plist"
+uid="$(id -u)"
+
+mkdir -p "$HOME/.local/bin"
+launchctl bootout "gui/$uid/com.noaahh.focus-ring" 2>/dev/null || true
+
+echo "Building focus-ring..."
+swiftc -O -F /System/Library/PrivateFrameworks -framework SkyLight -o "$BIN" "$SRC"
+
+for _ in 1 2 3 4 5; do
+  launchctl bootstrap "gui/$uid" "$PLIST" 2>/dev/null && break
+  sleep 1
+done
+launchctl print "gui/$uid/com.noaahh.focus-ring" >/dev/null 2>&1 || {
+  echo "failed to load com.noaahh.focus-ring" >&2
+  exit 1
+}
+{{ end -}}

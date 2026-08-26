@@ -25,6 +25,9 @@ default-root-container-orientation = 'auto'
 
 on-focus-changed = ['move-mouse window-lazy-center']
 on-focused-monitor-changed = ['move-mouse monitor-lazy-center']
+# lets focus-ring (~/dev/focus-ring) hide instantly during a workspace
+# switch instead of briefly ringing a mid-flight window
+exec-on-workspace-change = ['/usr/bin/touch', '/tmp/focus-ring-ws-switch']
 
 [gaps]
 outer.top = 8

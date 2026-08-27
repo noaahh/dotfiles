@@ -1,0 +1,152 @@
+#!/usr/bin/env -S uv run --script
+# /// script
+# requires-python = ">=3.11"
+# dependencies = ["tomlkit"]
+# ///
+#
+# Claude Code (~/.claude.json "mcpServers") is the ground truth for MCP
+# server config. This adds any server missing from Codex CLI, OpenCode, and
+# the pi coding agent -- it never touches an entry that already exists in a
+# target, so hand-tuned per-tool settings (Codex's per-tool approval_mode
+# blocks, timeouts, comments) survive. A tool not installed on this machine
+# is skipped, not created.
+#
+# Usage:
+#   sync-mcp-config check   # report drift, exit 1 if any target is missing entries
+#   sync-mcp-config apply   # write missing entries (backs up each file first)
+import json
+import shutil
+import sys
+from pathlib import Path
+
+import tomlkit
+
+CLAUDE_JSON = Path.home() / ".claude.json"
+CODEX_CONFIG = Path.home() / ".codex" / "config.toml"
+OPENCODE_CONFIG = Path.home() / ".config" / "opencode" / "opencode.json"
+PI_MCP = Path.home() / ".pi" / "agent" / "mcp.json"
+
+# Claude's self-delegation entry (Claude calling out to the codex CLI as a
+# subagent). It's specific to Claude's setup, not a server to mirror into
+# Codex's own config or elsewhere.
+EXCLUDE = {"codex"}
+
+# Claude's name -> Codex's name, where they differ for the same server.
+CODEX_NAME_ALIAS = {"linear-server": "linear"}
+
+
+def backup(path):
+    shutil.copy2(path, path.with_name(path.name + ".pre-sync-mcp.bak"))
+
+
+def sync_codex(servers, apply):
+    if not CODEX_CONFIG.exists():
+        return None
+    doc = tomlkit.parse(CODEX_CONFIG.read_text())
+    existing = set(doc.get("mcp_servers", {}).keys())
+    missing = {}
+    for name, cfg in servers.items():
+        if name in EXCLUDE:
+            continue
+        cname = CODEX_NAME_ALIAS.get(name, name)
+        if cname not in existing:
+            missing[cname] = cfg
+    if not missing:
+        return []
+    if apply:
+        backup(CODEX_CONFIG)
+        table = doc.setdefault("mcp_servers", tomlkit.table(is_super_table=True))
+        for cname, cfg in missing.items():
+            t = tomlkit.table()
+            if cfg.get("type") == "http":
+                t["url"] = cfg["url"]
+            else:
+                t["command"] = cfg["command"]
+                if cfg.get("args"):
+                    t["args"] = cfg["args"]
+                if cfg.get("env"):
+                    envt = tomlkit.table()
+                    for k, v in cfg["env"].items():
+                        envt[k] = v
+                    t["env"] = envt
+            t["startup_timeout_sec"] = 20.0
+            table[cname] = t
+        CODEX_CONFIG.write_text(tomlkit.dumps(doc))
+    return sorted(missing)
+
+
+def sync_opencode(servers, apply):
+    if not OPENCODE_CONFIG.exists():
+        return None
+    data = json.loads(OPENCODE_CONFIG.read_text())
+    existing = set(data.get("mcp", {}).keys())
+    missing = {n: c for n, c in servers.items() if n not in EXCLUDE and n not in existing}
+    if not missing:
+        return []
+    if apply:
+        backup(OPENCODE_CONFIG)
+        data.setdefault("mcp", {})
+        for name, cfg in missing.items():
+            if cfg.get("type") == "http":
+                data["mcp"][name] = {"type": "remote", "url": cfg["url"]}
+            else:
+                data["mcp"][name] = {
+                    "type": "local",
+                    "command": [cfg["command"], *cfg.get("args", [])],
+                }
+        OPENCODE_CONFIG.write_text(json.dumps(data, indent=2) + "\n")
+    return sorted(missing)
+
+
+def sync_pi(servers, apply):
+    # ~/.pi/agent is pi's config dir; mcp.json itself may not exist yet.
+    if not PI_MCP.parent.exists():
+        return None
+    data = json.loads(PI_MCP.read_text()) if PI_MCP.exists() else {}
+    existing = set(data.get("mcpServers", {}).keys())
+    missing = {n: c for n, c in servers.items() if n not in EXCLUDE and n not in existing}
+    if not missing:
+        return []
+    if apply:
+        if PI_MCP.exists():
+            backup(PI_MCP)
+        data.setdefault("mcpServers", {})
+        for name, cfg in missing.items():
+            # pi's mcp.json follows the same mcpServers shape as Claude's.
+            data["mcpServers"][name] = cfg
+        PI_MCP.write_text(json.dumps(data, indent=2) + "\n")
+    return sorted(missing)
+
+
+def main():
+    mode = sys.argv[1] if len(sys.argv) > 1 else "check"
+    if mode not in ("check", "apply"):
+        print("usage: sync-mcp-config [check|apply]", file=sys.stderr)
+        sys.exit(2)
+    apply = mode == "apply"
+
+    claude_data = json.loads(CLAUDE_JSON.read_text())
+    servers = claude_data.get("mcpServers", {})
+
+    any_missing = False
+    for target_name, sync in (
+        ("codex", sync_codex),
+        ("opencode", sync_opencode),
+        ("pi", sync_pi),
+    ):
+        missing = sync(servers, apply)
+        if missing is None:
+            print(f"{target_name}: not installed on this machine, skipped")
+        elif missing:
+            any_missing = True
+            verb = "added" if apply else "missing"
+            print(f"{target_name}: {verb} {', '.join(missing)}")
+        else:
+            print(f"{target_name}: in sync")
+
+    if mode == "check":
+        sys.exit(1 if any_missing else 0)
+
+
+if __name__ == "__main__":
+    main()

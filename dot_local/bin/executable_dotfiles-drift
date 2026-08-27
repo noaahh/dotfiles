@@ -50,6 +50,14 @@ check_default -g ApplePressAndHoldEnabled 0
 check_default com.apple.dock autohide-delay 0
 check_default com.apple.dock mru-spaces 0
 
+# 5. MCP server config: Claude Code (~/.claude.json) is ground truth, Codex/
+# OpenCode/pi should have the same servers. See ~/.local/bin/sync-mcp-config.
+if command -v sync-mcp-config >/dev/null 2>&1; then
+  mcpdiff="$(sync-mcp-config check 2>&1)"
+  rc=$?
+  [ "$rc" -ne 0 ] && add "MCP config drift (run: sync-mcp-config apply)" "$mcpdiff"
+fi
+
 ts="$(date '+%Y-%m-%d %H:%M')"
 if [ -n "$report" ]; then
   printf '=== %s: drift detected ===\n%s\n' "$ts" "$report"

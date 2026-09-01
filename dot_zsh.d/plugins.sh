@@ -7,7 +7,7 @@ plug "zap-zsh/zap-prompt"
 plug "MichaelAquilina/zsh-you-should-use"
 
 plug "Aloxaf/fzf-tab"
-plug "zap-users/zsh-syntax-highlighting"
+plug "zsh-users/zsh-syntax-highlighting"
 
 # Up/Down arrow filters history by what's already typed, instead of just cycling.
 # Must load after zsh-syntax-highlighting so matches get highlighted correctly.

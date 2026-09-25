@@ -93,7 +93,6 @@ brew "snowplow/taps/snowplow-cli", trusted: true
 
 # Networking
 brew "wireguard-tools"
-brew "zrok"
 
 # Desktop odds and ends
 brew "automake"
@@ -108,7 +107,6 @@ cask "betterdisplay"
 cask "flux-app"
 cask "hiddenbar"
 cask "meetingbar"
-cask "openlogi"
 cask "raycast"
 cask "scroll-reverser"
 cask "shottr"
@@ -121,7 +119,6 @@ cask "docker-desktop"
 cask "fork"
 cask "kitty"
 cask "linear"
-cask "ngrok"
 cask "visual-studio-code"
 
 # AI

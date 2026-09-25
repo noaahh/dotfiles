@@ -184,7 +184,6 @@ vscode "ms-vscode.remote-server"
 uv "context-stats"
 uv "cookiecutter"
 uv "dbt-core", with: ["dbt-snowflake"]
-uv "graphifyy"
 uv "meltano"
 uv "ruff"
 npm "@doist/todoist-cli"

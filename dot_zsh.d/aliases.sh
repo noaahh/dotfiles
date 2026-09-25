@@ -1,11 +1,9 @@
 #!/bin/zsh
 
 
-# Prefer GNU tools over BSD ones
-
-# GNU sed
-alias sed="gsed"
-alias awk="gawk"
+# Prefer GNU tools over BSD ones (macOS brew names; Linux already has them)
+(( $+commands[gsed] )) && alias sed="gsed"
+(( $+commands[gawk] )) && alias awk="gawk"
 
 # Jump to the chezmoi source repo, where the dotfiles actually live.
 # Resolved at runtime rather than hardcoded, so it survives a different

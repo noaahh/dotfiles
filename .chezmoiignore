@@ -11,3 +11,16 @@ Brewfile
 .ssh/config
 .ssh/config.age
 {{- end }}
+{{- if ne .chezmoi.os "darwin" }}
+# macOS-only: window management, terminal, launch agents and the sources
+# those tools are built from.
+.config/aerospace
+.config/aerospace-swipe
+.config/AutoRaise
+.config/focus-ring
+.config/kitty
+Library
+.local/bin/macos-defaults
+.local/share/aerospace-swipe
+.local/share/AutoRaise
+{{- end }}

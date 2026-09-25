@@ -11,8 +11,8 @@ plug "zsh-users/zsh-syntax-highlighting"
 # Up/Down arrow filters history by what's already typed, instead of just cycling.
 # Must load after zsh-syntax-highlighting so matches get highlighted correctly.
 plug "zsh-users/zsh-history-substring-search"
-bindkey "$terminfo[kcuu1]" history-substring-search-up
-bindkey "$terminfo[kcud1]" history-substring-search-down
+[[ -n "$terminfo[kcuu1]" ]] && bindkey "$terminfo[kcuu1]" history-substring-search-up
+[[ -n "$terminfo[kcud1]" ]] && bindkey "$terminfo[kcud1]" history-substring-search-down
 bindkey -M vicmd 'k' history-substring-search-up
 bindkey -M vicmd 'j' history-substring-search-down
 
@@ -22,6 +22,7 @@ bindkey -M vicmd 'j' history-substring-search-down
 # it stays readable when the terminal (kitty) is in light mode. Checked on every
 # ^R because long-lived shells outlive an appearance switch.
 eval "$(mcfly init zsh)"
+if [[ $OSTYPE == darwin* ]]; then
 mcfly-appearance-widget() {
   if [[ "$(defaults read -g AppleInterfaceStyle 2>/dev/null)" == "Dark" ]]; then
     unset MCFLY_LIGHT
@@ -32,3 +33,4 @@ mcfly-appearance-widget() {
 }
 zle -N mcfly-appearance-widget
 bindkey '^R' mcfly-appearance-widget
+fi

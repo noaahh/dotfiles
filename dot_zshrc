@@ -16,5 +16,8 @@ export PATH="$HOME/.local/bin:$PATH"
 
 export PATH="$HOME/.bun/bin:$PATH"
 
+# bun completions
+[ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
+
 # Keep the first occurrence of each PATH entry.
 typeset -U path

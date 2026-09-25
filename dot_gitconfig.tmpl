@@ -1,7 +1,10 @@
 [user]
 	email = {{ if hasKey . "email" }}{{ .email }}{{ else }}test@example.com{{ end }}
 	name = {{ if hasKey . "name" }}{{ .name }}{{ else }}Test User{{ end }}
+{{- $sign := stat (joinPath .chezmoi.homeDir ".ssh/id_signing.pub") }}
+{{- if $sign }}
 	signingKey = ~/.ssh/id_signing.pub
+{{- end }}
 
 [init]
 	defaultBranch = master
@@ -42,8 +45,9 @@
 	ff = merge --ff-only
 
 [commit]
-	gpgSign = true
 	verbose = true
+{{- if $sign }}
+	gpgSign = true
 
 [tag]
 	forceSignAnnotated = true
@@ -53,9 +57,20 @@
 
 [gpg "ssh"]
 	allowedSignersFile = ~/.config/git/allowed_signers
+{{- end }}
+{{- if and (ne .chezmoi.os "darwin") (lookPath "gh") }}
+# Linux boxes authenticate https to GitHub through gh rather than a keychain.
+[credential "https://github.com"]
+	helper =
+	helper = !{{ lookPath "gh" }} auth git-credential
+[credential "https://gist.github.com"]
+	helper =
+	helper = !{{ lookPath "gh" }} auth git-credential
+{{- end }}
 # pushInsteadOf, not insteadOf: a blanket https->ssh rewrite would also hit
 # anonymous clones chezmoi makes (the zap external), which fail on a fresh
-# machine with no GitHub ssh key. Pushes still go over ssh.
+# machine with no GitHub ssh key. Pushes still go over ssh, which also keeps
+# machines without a registered GitHub key from pushing this repo.
 [url "git@github.com:"]
 	pushInsteadOf = https://github.com/
 [credential "https://ampcode.com"]

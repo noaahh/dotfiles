@@ -37,7 +37,7 @@ the local, uncommitted `~/.config/chezmoi/chezmoi.toml`, e.g. `collie = true`.
 
 ## Layout
 
-- `Brewfile`: packages, casks, and VS Code extensions; validated by CI
+- `Brewfile`: packages, casks, fonts, and VS Code extensions; validated by CI
 - `.chezmoiscripts/`: setup scripts, kept out of the home directory
 - `.chezmoiexternal.toml`: repos cloned by chezmoi (zap, plus sources for
   tools built locally)

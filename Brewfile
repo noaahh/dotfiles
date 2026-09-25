@@ -7,6 +7,7 @@
 tap "ampcode/tap"
 tap "anomalyco/tap"
 tap "bjarneo/cliamp"
+tap "hashicorp/tap"
 tap "jwarykowski/tap"
 tap "nikitabobko/tap", trusted: { casks: ["aerospace"] }
 tap "oven-sh/bun"
@@ -84,7 +85,7 @@ brew "railway"
 brew "rclone"
 brew "redis"
 brew "snowflake-cli"
-brew "terraform"
+brew "hashicorp/tap/terraform", trusted: true
 brew "gopass"
 brew "snowplow/taps/snowplow-cli", trusted: true
 
@@ -114,7 +115,6 @@ cask "clickhouse"
 cask "docker-desktop"
 cask "fork"
 cask "kitty"
-cask "linear"
 cask "visual-studio-code"
 
 # AI
@@ -180,6 +180,7 @@ uv "dbt-core", with: ["dbt-snowflake"]
 uv "meltano"
 uv "ruff"
 npm "@doist/todoist-cli"
+npm "@tobilu/qmd"
 npm "defuddle"
 npm "node-gyp"
 npm "serverless"

@@ -10,7 +10,6 @@ tap "bjarneo/cliamp"
 tap "jwarykowski/tap"
 tap "nikitabobko/tap", trusted: { casks: ["aerospace"] }
 tap "oven-sh/bun"
-tap "schpet/tap"
 tap "snowplow/taps"
 tap "stablyai/orca", trusted: { casks: ["orca"] }
 tap "steipete/tap", trusted: { casks: ["codexbar"] }
@@ -72,7 +71,6 @@ brew "rtk"
 brew "python@3.11"
 brew "rust"
 brew "jwarykowski/tap/shepherd", trusted: true
-brew "schpet/tap/linear", link: false, trusted: true
 
 # Cloud and data
 brew "awscli"

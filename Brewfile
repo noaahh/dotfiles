@@ -7,7 +7,6 @@
 tap "ampcode/tap"
 tap "anomalyco/tap"
 tap "bjarneo/cliamp"
-tap "cloudmanic/spice-edit", "https://github.com/cloudmanic/spice-edit"
 tap "jwarykowski/tap"
 tap "nikitabobko/tap", trusted: { casks: ["aerospace"] }
 tap "oven-sh/bun"
@@ -99,7 +98,6 @@ brew "automake"
 brew "mole"
 brew "nvtop"
 brew "bjarneo/cliamp/cliamp", trusted: true
-brew "cloudmanic/spice-edit/spice-edit"
 
 # Window management and menu bar
 cask "aerospace"

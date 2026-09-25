@@ -130,6 +130,24 @@ rotation=$(jq -rs '
 
 has_blocked=$(printf '%s\n' "$rotation" | awk -F'\t' 'NR == 1 && $4 == "blocked" { print "yes" }')
 
+# Nothing pending locally: check saved machines. The CLI cannot switch this
+# window to another machine, so focus the pane there and say where to look.
+if [[ "$has_blocked" != "yes" && -z "$newest_done" ]]; then
+  to=(); command -v timeout >/dev/null 2>&1 && to=(timeout 5)
+  while IFS=$'\t' read -r _ label _ _ state; do
+    [[ "$state" == enabled ]] || continue
+    remote=$(${to[@]+"${to[@]}"} "$HERDR" --machine "$label" agent list 2>/dev/null | jq -r '
+      [.result.agents[] | select(.agent_status == "blocked" or .agent_status == "done")]
+      | sort_by((if .agent_status == "blocked" then 0 else 1 end), -(.state_change_seq // 0))
+      | first // empty | [.pane_id, .agent_status, (.terminal_title_stripped // .agent)] | @tsv') || continue
+    [[ -n "$remote" ]] || continue
+    IFS=$'\t' read -r r_pane r_status r_title <<< "$remote"
+    ${to[@]+"${to[@]}"} "$HERDR" --machine "$label" agent focus "$r_pane" >/dev/null 2>&1
+    "$HERDR" notification show "$label: $r_status" --body "$r_title" --sound none >/dev/null 2>&1
+    exit 0
+  done < <("$HERDR" machine list 2>/dev/null)
+fi
+
 if [[ -n "$rotation" && "$has_blocked" == "yes" ]]; then
   : # blocked agents rotate below
 elif [[ -n "$newest_done" ]]; then

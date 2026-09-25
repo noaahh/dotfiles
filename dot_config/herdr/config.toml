@@ -1,8 +1,8 @@
 onboarding = false
 [theme]
-name = "solarized-light"
+name = "vesper"
 
-auto_switch = false
+auto_switch = true
 dark_name = "one-dark"
 light_name = "one-light"
 [terminal]
@@ -34,28 +34,22 @@ height = "92%"
 description = "popup shell (native floax candidate)"
 
 [[keys.command]]
-key = "prefix+t"
+key = "prefix+a"
 type = "plugin_action"
-command = "herdr-navigator.open"
-description = "jump to anything"
+command = "herdr.omnisearch.open-live"
+description = "OmniSearch: live workspaces and panes"
+
+[[keys.command]]
+key = "prefix+shift+a"
+type = "plugin_action"
+command = "herdr.omnisearch.open-archive"
+description = "OmniSearch: archived conversations"
 
 [[keys.command]]
 key = "prefix+shift+o"
 type = "plugin_action"
 command = "jwarykowski.herdr-shepherd.open"
 description = "shepherd"
-
-[[keys.command]]
-key = "prefix+f"
-type = "shell"
-command = "herdr plugin action invoke open-file-viewer --plugin herdr-file-viewer"
-description = "file viewer"
-
-[[keys.command]]
-key = "prefix+shift+f"
-type = "shell"
-command = "herdr plugin action invoke open-file-viewer-tab --plugin herdr-file-viewer"
-description = "file viewer tab"
 
 [[keys.command]]
 key = "prefix+d"
@@ -93,6 +87,7 @@ mouse_capture = true
 confirm_close = true
 prompt_new_workspace_name = true
 
+pane_borders = "always"
 show_agent_labels_on_pane_borders = true
 agent_panel_sort = "priority"
 status_indicators = "symbols"
@@ -104,15 +99,15 @@ enabled = false
 
 [ui.sidebar.spaces]
 row_gap = 1
-rows = [["state_icon", "workspace"], ["branch", "git_status"]]
+rows = [["state_icon", "workspace"], ["branch", "git_status", { token = "$mem", rules = [{ gt = 85, fg = "#dc322f", bold = true }, { gt = 70, fg = "#b58900" }] }]]
 
 [ui.sidebar.agents]
 row_gap = 1
-rows = [["state_icon", "workspace", "tab"], ["agent"]]
+rows = [["state_icon", { token = "machine", fg = "#b58900", rules = [{ equals = "Local", hide = true }] }, "workspace", "tab"], ["agent"]]
 
 [ui.sidebar.agents.rows_by_agent]
-claude = [["state_icon", "workspace", "tab"], [{ token = "terminal_title_stripped", dim = true }]]
-codex = [["state_icon", "workspace", "tab"], [{ token = "terminal_title_stripped", dim = true }]]
+claude = [["state_icon", { token = "machine", fg = "#b58900", rules = [{ equals = "Local", hide = true }] }, "workspace", "tab"], [{ token = "terminal_title_stripped", dim = true }]]
+codex = [["state_icon", { token = "machine", fg = "#b58900", rules = [{ equals = "Local", hide = true }] }, "workspace", "tab"], [{ token = "terminal_title_stripped", dim = true }]]
 
 [session]
 resume_agents_on_restore = true
@@ -140,7 +135,7 @@ command = "jhochenbaum.hunkdiff.review:commit"
 description = "hunk: review the last commit"
 
 [[keys.command]]
-key = "prefix+shift+a"
+key = "prefix+shift+i"
 type = "plugin_action"
 command = "jhochenbaum.hunkdiff.review:staged"
 description = "hunk: review staged changes"

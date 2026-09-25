@@ -1,12 +1,13 @@
-# Aligned with the machine on 2026-08-19. `brew bundle` installs what is
+# Aligned with the machine on 2026-09-25. `brew bundle` installs what is
 # missing on apply; it never removes, so treat this as the guaranteed set.
 # node is deliberately absent: it stays installed as a brew dependency of
-# opencode and agent-browser, but node and go versions come from mise
+# agent-browser, but node and go versions come from mise
 # (~/.config/mise/config.toml).
 
+tap "ampcode/tap"
+tap "anomalyco/tap"
 tap "bjarneo/cliamp"
 tap "cloudmanic/spice-edit", "https://github.com/cloudmanic/spice-edit"
-tap "felixkratz/formulae", "https://github.com/FelixKratz/homebrew-formulae"
 tap "jwarykowski/tap"
 tap "nikitabobko/tap", trusted: { casks: ["aerospace"] }
 tap "oven-sh/bun"
@@ -14,7 +15,6 @@ tap "schpet/tap"
 tap "snowplow/taps"
 tap "stablyai/orca", trusted: { casks: ["orca"] }
 tap "steipete/tap", trusted: { casks: ["codexbar"] }
-tap "vjeantet/tap"
 
 # CLI basics
 brew "bat"
@@ -39,7 +39,6 @@ brew "tmux"
 brew "tree"
 brew "yazi"
 brew "yq"
-brew "vjeantet/tap/alerter", trusted: true
 
 # Git and dotfiles
 brew "chezmoi"
@@ -68,8 +67,11 @@ brew "agent-browser"
 brew "herdr"
 brew "hunk"
 brew "llama.cpp"
-brew "opencode"
+brew "anomalyco/tap/opencode", trusted: true
+brew "ampcode/tap/ampcode", trusted: true
 brew "rtk"
+brew "python@3.11"
+brew "rust"
 brew "jwarykowski/tap/shepherd", trusted: true
 brew "schpet/tap/linear", link: false, trusted: true
 
@@ -97,7 +99,6 @@ brew "zrok"
 brew "automake"
 brew "mole"
 brew "nvtop"
-brew "felixkratz/formulae/borders", restart_service: :changed, trusted: true
 brew "bjarneo/cliamp/cliamp", trusted: true
 brew "cloudmanic/spice-edit/spice-edit"
 
@@ -106,7 +107,6 @@ cask "aerospace"
 cask "betterdisplay"
 cask "flux-app"
 cask "hiddenbar"
-cask "itsycal"
 cask "meetingbar"
 cask "openlogi"
 cask "raycast"
@@ -127,7 +127,6 @@ cask "visual-studio-code"
 # AI
 cask "chatgpt"
 cask "claude"
-cask "claude-code@latest"
 cask "codex"
 cask "codex-app"
 cask "codexbar"
@@ -147,7 +146,6 @@ cask "spotify"
 cask "vlc"
 
 # Sync and network
-cask "onedrive"
 cask "syncthing-app"
 cask "tailscale-app"
 
@@ -183,6 +181,7 @@ vscode "ms-vscode.remote-explorer"
 vscode "ms-vscode.remote-server"
 
 # Other package managers
+uv "context-stats"
 uv "cookiecutter"
 uv "dbt-core", with: ["dbt-snowflake"]
 uv "graphifyy"

@@ -31,7 +31,7 @@ type = "popup"
 command = "zsh"
 width = "94%"
 height = "92%"
-description = "popup shell (native floax candidate)"
+description = "popup shell"
 
 [[keys.command]]
 key = "prefix+a"
@@ -52,34 +52,10 @@ command = "jwarykowski.herdr-shepherd.open"
 description = "shepherd"
 
 [[keys.command]]
-key = "prefix+d"
-type = "plugin_action"
-command = "persiyanov.reviewr.toggle"
-description = "toggle reviewr"
-
-[[keys.command]]
-key = "prefix+u"
-type = "plugin_action"
-command = "herdr-floax.toggle"
-description = "toggle floating shell"
-
-[[keys.command]]
 key = "alt+a"
 type = "shell"
 command = "~/.config/herdr/next-pending.sh"
 description = "focus next pending agent"
-
-[[keys.command]]
-key = "prefix+up"
-type = "plugin_action"
-command = "cloudmanic.herdr-plus.projects"
-description = "herdr-plus: projects"
-
-[[keys.command]]
-key = "prefix+down"
-type = "plugin_action"
-command = "cloudmanic.herdr-plus.quick-actions"
-description = "herdr-plus: quick actions"
 
 [ui]
 sidebar_width = 28

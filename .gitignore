@@ -24,6 +24,9 @@ Icon
 # templates, which own a fixed set of preference keys, are tracked.
 dot_claude/*
 !dot_claude/modify_settings.json
+!dot_claude/scripts/
+dot_claude/scripts/*
+!dot_claude/scripts/executable_statusline.sh
 dot_codex/*
 !dot_codex/modify_private_config.toml
 dot_config/opencode/

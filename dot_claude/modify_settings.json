@@ -1,5 +1,5 @@
 {{- /* chezmoi:modify-template */ -}}
-{{- /* Owns only the preference keys below; permissions, hooks, statusLine and
+{{- /* Owns only the preference keys below; permissions, hooks and
 anything else Claude Code writes stay machine-local. The live file is passed
 through untouched when these keys already match, so Claude Code's own
 formatting does not show up as drift. */ -}}
@@ -14,6 +14,7 @@ formatting does not show up as drift. */ -}}
   "autoCompactEnabled": true,
   "agentPushNotifEnabled": true,
   "remoteControlAtStartup": true,
+  "statusLine": { "type": "command", "command": "~/.claude/scripts/statusline.sh" },
   "enabledPlugins": {
     "mattpocock-skills@claude-plugins-official": true,
     "i-have-adhd@i-have-adhd": true,
@@ -33,5 +34,5 @@ formatting does not show up as drift. */ -}}
 {{- if and .chezmoi.stdin (eq (toJson $merged) (toJson $live)) -}}
 {{- .chezmoi.stdin -}}
 {{- else -}}
-{{- toPrettyJson $merged }}
-{{ end -}}
+{{- toPrettyJson $merged -}}
+{{- end -}}

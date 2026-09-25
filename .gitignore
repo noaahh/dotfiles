@@ -20,9 +20,12 @@ Icon
 ### chezmoi: intentionally local-only
 # Coding agent configs stay off this public repo. They accumulate per-directory
 # trust entries, MCP server definitions and project paths that point at work
-# repos, and re-adding them keeps dragging that back in. Manage them by hand.
-dot_claude/
-dot_codex/
+# repos, and re-adding them keeps dragging that back in. Only the modify_
+# templates, which own a fixed set of preference keys, are tracked.
+dot_claude/*
+!dot_claude/modify_settings.json
+dot_codex/*
+!dot_codex/modify_private_config.toml
 dot_config/opencode/
 # Machine-local shell config (see dot_zshrc).
 dot_zsh.d/99-local.sh

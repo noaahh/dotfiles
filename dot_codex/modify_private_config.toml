@@ -1,0 +1,41 @@
+{{- /* chezmoi:modify-template */ -}}
+{{- /* Owns only the preferences below. Project trust entries, MCP servers,
+marketplaces, plugins, shell env and state that Codex writes stay
+machine-local. The live file is passed through untouched when these values
+already match, so Codex's own formatting does not show up as drift. */ -}}
+{{- $managed := fromToml `
+approval_policy = "on-request"
+approvals_reviewer = "auto_review"
+allow_login_shell = false
+file_opener = "vscode"
+model = "gpt-5.6-sol"
+model_reasoning_effort = "medium"
+personality = "pragmatic"
+sandbox_mode = "workspace-write"
+service_tier = "fast"
+suppress_unstable_features_warning = true
+web_search = "cached"
+
+[features]
+apps = false
+hooks = true
+js_repl = false
+memories = true
+multi_agent = true
+prevent_idle_sleep = true
+runtime_metrics = true
+
+[sandbox_workspace_write]
+network_access = false
+
+[tui]
+theme = "flexoki-high-contrast-light"
+` -}}
+{{- $live := dict -}}
+{{- if .chezmoi.stdin }}{{ $live = fromToml .chezmoi.stdin }}{{ end -}}
+{{- $merged := mergeOverwrite (deepCopy $live) $managed -}}
+{{- if and .chezmoi.stdin (eq (toJson $merged) (toJson $live)) -}}
+{{- .chezmoi.stdin -}}
+{{- else -}}
+{{- toToml $merged -}}
+{{- end -}}

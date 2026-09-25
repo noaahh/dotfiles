@@ -2,8 +2,7 @@
 
 Configuration and provisioning for my macOS machines, managed with
 [chezmoi](https://chezmoi.io). This repo owns the whole lifecycle: a fresh
-machine bootstraps from it, and an existing machine reconciles against it on
-every `chezmoi apply`.
+machine bootstraps from it, and an existing machine reconciles against it.
 
 ## Bootstrap a fresh machine
 
@@ -11,32 +10,24 @@ every `chezmoi apply`.
 sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply --use-builtin-git true noaahh
 ```
 
-That single command installs chezmoi, clones this repo, and applies it. On the
-way it:
+This installs chezmoi, clones the repo, writes the dotfiles and runs every
+setup step. Each step is a script in `.chezmoiscripts/`, numbered in run
+order; `run_onchange_` scripts rerun whenever their content or input changes.
 
-- installs Xcode Command Line Tools and Homebrew (`run_once_` script)
-- installs everything in the `Brewfile` via `brew bundle` (`run_onchange_`
-  script, reruns whenever the Brewfile changes)
-- clones the [zap](https://github.com/zap-zsh/zap) zsh plugin manager as a
-  chezmoi external
-- writes the dotfiles themselves
-- applies macOS defaults (animations, key repeat, Finder, screenshots), see
-  below
+## Keep a machine in sync
+
+```shell
+converge   # chezmoi update: pull, then apply
+```
 
 ## macOS defaults
-
-`~/.local/bin/macos-defaults` strips the system animations that add latency
-without adding information and tunes the keyboard for a tiling-WM setup.
-chezmoi reruns it whenever the script changes; it is idempotent and safe to
-run by hand:
 
 ```shell
 macos-defaults            # apply
 macos-defaults --revert   # back to stock
 ```
 
-The `NSGlobalDomain` keys are read at app launch, so log out and back in for
-them to fully take hold.
+Log out and back in for the `NSGlobalDomain` keys to take hold.
 
 ## Machine-specific opt-ins
 
@@ -46,8 +37,8 @@ the local, uncommitted `~/.config/chezmoi/chezmoi.toml`, e.g. `collie = true`.
 
 ## Layout
 
-- `Brewfile`: packages, casks, fonts, and VS Code extensions; validated by CI
-- `.chezmoiscripts/`: install and configure scripts, kept out of the home
-  directory
-- `.chezmoiexternal.toml`: externally sourced repos (zap)
+- `Brewfile`: packages, casks, and VS Code extensions; validated by CI
+- `.chezmoiscripts/`: setup scripts, kept out of the home directory
+- `.chezmoiexternal.toml`: repos cloned by chezmoi (zap, plus sources for
+  tools built locally)
 - `dot_*`, `private_*`: the managed dotfiles

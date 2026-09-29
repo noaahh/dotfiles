@@ -1,0 +1,35 @@
+id = "noah.tidy"
+name = "Tidy"
+version = "0.1.0"
+min_herdr_version = "0.9.0"
+description = "Mark agent panes you have not prompted in a while and close them in bulk; the archive search keeps them resumable"
+platforms = ["macos", "linux"]
+
+[[startup]]
+command = ["python3", "tidy.py", "refresh"]
+
+[[actions]]
+id = "tidy"
+title = "Tidy: close stale agent panes"
+command = ["herdr", "plugin", "pane", "open", "--plugin", "noah.tidy", "--entrypoint", "picker"]
+
+[[actions]]
+id = "refresh"
+title = "Tidy: refresh stale markers"
+command = ["python3", "tidy.py", "refresh"]
+
+[[events]]
+on = "pane.agent_status_changed"
+command = ["python3", "tidy.py", "refresh"]
+
+[[events]]
+on = "pane.created"
+command = ["python3", "tidy.py", "refresh"]
+
+[[panes]]
+id = "picker"
+title = "Tidy"
+placement = "popup"
+width = "80%"
+height = "60%"
+command = ["sh", "-c", "exec python3 \"$HERDR_PLUGIN_ROOT/tidy.py\" pick"]

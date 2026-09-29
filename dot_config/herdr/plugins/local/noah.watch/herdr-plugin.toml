@@ -1,0 +1,33 @@
+id = "noah.watch"
+name = "Watch"
+version = "0.2.0"
+min_herdr_version = "0.9.0"
+description = "Opt a single pane into a one-shot notification when its agent finishes or needs input"
+platforms = ["macos", "linux"]
+
+[[startup]]
+command = ["sh", "watch.sh", "reset"]
+
+[[actions]]
+id = "toggle"
+title = "Watch: notify once when this agent finishes"
+contexts = ["pane"]
+command = ["sh", "watch.sh", "once"]
+
+[[actions]]
+id = "toggle-sticky"
+title = "Watch: notify every time this agent finishes, until turned off"
+contexts = ["pane"]
+command = ["sh", "watch.sh", "sticky"]
+
+[[events]]
+on = "pane.agent_status_changed"
+command = ["sh", "watch.sh", "event"]
+
+[[events]]
+on = "pane.closed"
+command = ["sh", "watch.sh", "event"]
+
+[[events]]
+on = "pane.exited"
+command = ["sh", "watch.sh", "event"]

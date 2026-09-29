@@ -17,6 +17,8 @@ previous_tab = "alt+shift+tab"
 next_tab = "alt+tab"
 previous_workspace = "prefix+shift+left"
 next_workspace = "prefix+shift+right"
+next_agent = "alt+a"
+previous_agent = "alt+shift+a"
 
 [[keys.command]]
 key = "prefix+alt+g"
@@ -52,25 +54,42 @@ command = "jwarykowski.herdr-shepherd.open"
 description = "shepherd"
 
 [[keys.command]]
-key = "alt+a"
-type = "shell"
-command = "~/.config/herdr/next-pending.sh"
-description = "focus next pending agent"
+key = "prefix+shift+n"
+type = "plugin_action"
+command = "noah.watch.toggle"
+description = "watch: notify once when this agent finishes"
+
+[[keys.command]]
+key = "prefix+alt+n"
+type = "plugin_action"
+command = "noah.watch.toggle-sticky"
+description = "watch: notify every time this agent finishes"
 
 [ui]
 mouse_capture = true
 confirm_close = true
 prompt_new_workspace_name = true
 agent_panel_sort = "priority"
+sidebar_width = 34
 [ui.toast]
 delivery = "off"
 
 [ui.sound]
 enabled = false
 
-[ui.sidebar.agents.rows_by_agent]
-claude = [["state_icon", "machine", "workspace", "tab"], [{ token = "terminal_title_stripped", dim = true }]]
-codex = [["state_icon", "machine", "workspace", "tab"], [{ token = "terminal_title_stripped", dim = true }]]
+# Task title first; context dimmed below. Machine hidden when Local,
+# state text shown only when blocked. $watch is set by the noah.watch plugin.
+[ui.sidebar.agents]
+row_gap = 1
+rows = [
+  ["state_icon", { token = "terminal_title_stripped", bold = true, dim = false }, "$watch"],
+  [
+    { token = "state_text", fg = "#e5484d", bold = true, rules = [{ equals = "blocked" }, { contains = "", hide = true }] },
+    { token = "machine", dim = true, rules = [{ equals = "Local", hide = true }] },
+    { token = "workspace", dim = true, bold = false },
+    { token = "tab", dim = true },
+  ],
+]
 
 [session]
 resume_agents_on_restore = true

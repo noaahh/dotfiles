@@ -47,6 +47,23 @@ case "$1" in
     [ -n "$pane" ] && [ ! -e "$dir/$pane" ] || exit 0
     jq -r '.prompt // ""' | grep -qiE '(^|[^a-z])(ping|notify) me([^a-z]|$)' || exit 0
     echo once > "$dir/$pane"; mark "$pane" "👀" ;;
+  tool)  # Claude Code PostToolUse hook: show pending wakeups and monitors in the sidebar
+    pane=${HERDR_PANE_ID:-}; [ -n "$pane" ] || exit 0
+    # ponytail: a Monitor that ends early keeps its token until its timeout; no hook fires on monitor exit
+    args=$(jq -r '
+      def hm: (./1000 | localtime | strftime("%H:%M"));
+      if .tool_name == "ScheduleWakeup" then
+        if .tool_response.stopped then "--clear-token\nwake"
+        else (.tool_response.scheduledFor) as $t
+          | "--token\nwake=\(if (.tool_input.reason // "" | startswith("cache-warm")) then "☕" else "⏰" end) \($t | hm)\n--ttl-ms\n\([$t - now*1000 + 60000, 1000] | max | floor)"
+        end
+      elif .tool_name == "Monitor" then
+        (.tool_response.timeoutMs // 0) as $ms
+        | "--token\nmon=👁 \(.tool_input.description // "monitor" | .[0:24])\n--ttl-ms\n\(if $ms > 0 then [$ms, 86400000] | min else 86400000 end)"
+      elif .tool_name == "TaskStop" then "--clear-token\nmon"
+      else empty end')
+    [ -n "$args" ] || exit 0
+    printf '%s\n' "$args" | tr '\n' '\0' | xargs -0 "$herdr" pane report-metadata "$pane" --source noah.watch.tool >/dev/null 2>&1 || true ;;
   event)
     ev=$(printf '%s' "${HERDR_PLUGIN_EVENT_JSON:-}" | jq -r '[.data.pane_id // "", .data.agent_status // ""] | @tsv')
     pane=${ev%%	*}; status=${ev#*	}

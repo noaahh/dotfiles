@@ -4,9 +4,13 @@
 # toggled off or the pane closes), or "fired" (sticky, waiting for the agent to
 # work again so done -> idle does not notify twice). The sidebar shows it via
 # the $watch pane token.
+#
+# Also run outside herdr's plugin runner: the Claude Code UserPromptSubmit hook
+# calls `watch.sh prompt`, so the state dir falls back to herdr's default.
 set -eu
 herdr=${HERDR_BIN_PATH:-herdr}
-dir="$HERDR_PLUGIN_STATE_DIR/watched"
+dir="${HERDR_PLUGIN_STATE_DIR:-${XDG_STATE_HOME:-$HOME/.local/state}/herdr/plugins/noah.watch}/watched"
+away_secs=${WATCH_AWAY_SECS:-300}
 mkdir -p "$dir"
 
 mark() { "$herdr" pane report-metadata "$1" --source noah.watch --token "watch=$2" >/dev/null 2>&1 || true; }
@@ -21,6 +25,12 @@ notify() {
   else
     notify-send "$1" "$2" 2>/dev/null || true
   fi
+  # away from the Mac: also push to the phone through Collie
+  idle=$(ioreg -c IOHIDSystem 2>/dev/null | awk '/HIDIdleTime/ {print int($NF/1000000000); exit}')
+  collie=$(ls "$HOME"/.config/herdr/plugins/github/herdr.collie-*/bin/collie 2>/dev/null | head -1)
+  if [ "${idle:-0}" -ge "$away_secs" ] && [ -n "$collie" ]; then
+    "$collie" push-test "$1" "$2" >/dev/null 2>&1 || true
+  fi
 }
 
 case "$1" in
@@ -32,6 +42,11 @@ case "$1" in
     if [ "$cur" = "$1" ]; then unmark "$pane"; exit 0; fi
     echo "$1" > "$dir/$pane"
     if [ "$1" = once ]; then mark "$pane" "👀"; else mark "$pane" "📡"; fi ;;
+  prompt)  # Claude Code hook: "ping me" / "notify me" in a prompt arms this pane once
+    pane=${HERDR_PANE_ID:-}
+    [ -n "$pane" ] && [ ! -e "$dir/$pane" ] || exit 0
+    jq -r '.prompt // ""' | grep -qiE '(^|[^a-z])(ping|notify) me([^a-z]|$)' || exit 0
+    echo once > "$dir/$pane"; mark "$pane" "👀" ;;
   event)
     ev=$(printf '%s' "${HERDR_PLUGIN_EVENT_JSON:-}" | jq -r '[.data.pane_id // "", .data.agent_status // ""] | @tsv')
     pane=${ev%%	*}; status=${ev#*	}

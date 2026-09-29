@@ -17,7 +17,6 @@ herdr plugin install dmnkf/herdr-omnisearch --yes
 # Local plugin, source lives in these dotfiles; relinking an existing link fails harmlessly.
 herdr plugin link "$HOME/.config/herdr/plugins/local/noah.watch" >/dev/null 2>&1 || true
 herdr plugin link "$HOME/.config/herdr/plugins/local/noah.tidy" >/dev/null 2>&1 || true
-herdr plugin link "$HOME/.config/herdr/plugins/local/noah.keys" >/dev/null 2>&1 || true
 
 if command -v jq >/dev/null 2>&1; then
     shepherd_root="$(herdr plugin list --json | jq -r '.result.plugins[] | select(.plugin_id == "jwarykowski.herdr-shepherd") | .plugin_root')"

@@ -80,7 +80,7 @@ prompt_new_workspace_name = true
 agent_panel_sort = "priority"
 sidebar_width = 34
 [ui.toast]
-delivery = "off"
+delivery = "herdr"
 
 [ui.sound]
 enabled = false

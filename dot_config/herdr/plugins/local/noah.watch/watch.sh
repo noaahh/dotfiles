@@ -15,6 +15,7 @@ mkdir -p "$dir"
 
 mark() { "$herdr" pane report-metadata "$1" --source noah.watch --token "watch=$2" >/dev/null 2>&1 || true; }
 unmark() { rm -f "$dir/$1"; "$herdr" pane report-metadata "$1" --source noah.watch --clear-token watch >/dev/null 2>&1 || true; }
+toast() { "$herdr" notification show "$1" --body "$2" --sound none >/dev/null 2>&1 || true; }
 
 notify() {
   if command -v terminal-notifier >/dev/null; then
@@ -39,14 +40,15 @@ case "$1" in
   once|sticky)  # same mode again turns it off; the other mode switches
     pane=${HERDR_PANE_ID:?no focused pane}
     cur=$(cat "$dir/$pane" 2>/dev/null || true); [ "$cur" = fired ] && cur=sticky
-    if [ "$cur" = "$1" ]; then unmark "$pane"; exit 0; fi
+    if [ "$cur" = "$1" ]; then unmark "$pane"; toast "Watch off" "No more notifications for this pane"; exit 0; fi
     echo "$1" > "$dir/$pane"
-    if [ "$1" = once ]; then mark "$pane" "👀"; else mark "$pane" "📡"; fi ;;
+    if [ "$1" = once ]; then mark "$pane" "👀"; toast "Watch on" "Notify once when this agent finishes"
+    else mark "$pane" "📡"; toast "Watch on" "Notify every time this agent finishes"; fi ;;
   prompt)  # Claude Code hook: "ping me" / "notify me" in a prompt arms this pane once
     pane=${HERDR_PANE_ID:-}
     [ -n "$pane" ] && [ ! -e "$dir/$pane" ] || exit 0
     jq -r '.prompt // ""' | grep -qiE '(^|[^a-z])(ping|notify) me([^a-z]|$)' || exit 0
-    echo once > "$dir/$pane"; mark "$pane" "👀" ;;
+    echo once > "$dir/$pane"; mark "$pane" "👀"; toast "Watch on" "Notify once when this agent finishes" ;;
   tool)  # Claude Code PostToolUse hook: show pending wakeups and monitors in the sidebar
     pane=${HERDR_PANE_ID:-}; [ -n "$pane" ] || exit 0
     # ponytail: a Monitor that ends early keeps its token until its timeout; no hook fires on monitor exit

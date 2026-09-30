@@ -5,17 +5,35 @@
 # work again so done -> idle does not notify twice). The sidebar shows it via
 # the $watch pane token.
 #
+# Independently of arming, any pane left blocked gets a toast after
+# BLOCKED_TOAST_SECS and a full notify after BLOCKED_NOTIFY_SECS.
+#
 # Also run outside herdr's plugin runner: the Claude Code UserPromptSubmit hook
 # calls `watch.sh prompt`, so the state dir falls back to herdr's default.
 set -eu
 herdr=${HERDR_BIN_PATH:-herdr}
 dir="${HERDR_PLUGIN_STATE_DIR:-${XDG_STATE_HOME:-$HOME/.local/state}/herdr/plugins/noah.watch}/watched"
 away_secs=${WATCH_AWAY_SECS:-300}
-mkdir -p "$dir"
+blocked="${dir%/watched}/blocked"
+mkdir -p "$dir" "$blocked"
 
 mark() { "$herdr" pane report-metadata "$1" --source noah.watch --token "watch=$2" >/dev/null 2>&1 || true; }
 unmark() { rm -f "$dir/$1"; "$herdr" pane report-metadata "$1" --source noah.watch --clear-token watch >/dev/null 2>&1 || true; }
 toast() { "$herdr" notification show "$1" --body "$2" --sound none >/dev/null 2>&1 || true; }
+title() { "$herdr" pane get "$1" 2>/dev/null | jq -r '.result.pane | .terminal_title_stripped // .agent // "agent"'; }
+
+# background sleeper per blocked episode; the marker holds its stamp, so a
+# newer episode or an unblock (marker gone) silently cancels an older sleeper
+escalate() {
+  still() { [ "$(cat "$blocked/$1" 2>/dev/null)" = "$2" ] &&
+    [ "$("$herdr" pane get "$1" 2>/dev/null | jq -r .result.pane.agent_status)" = blocked ]; }
+  t1=${BLOCKED_TOAST_SECS:-180}; t2=${BLOCKED_NOTIFY_SECS:-900}
+  sleep "$t1"; still "$1" "$2" || exit 0
+  toast "$(title "$1")" "Still waiting for input ($((t1 / 60))m)"
+  sleep $((t2 - t1)); still "$1" "$2" || exit 0
+  rm -f "$blocked/$1"
+  notify "$(title "$1")" "Still needs your input ($((t2 / 60))m)" "$1"
+}
 
 notify() {
   # already looking at herdr in kitty: an in-app toast is enough
@@ -40,7 +58,7 @@ notify() {
 
 case "$1" in
   reset)  # metadata tokens do not survive a server restart, so neither do markers
-    rm -f "$dir"/* ;;
+    rm -f "$dir"/* "$blocked"/* ;;
   once|sticky)  # same mode again turns it off; the other mode switches
     pane=${HERDR_PANE_ID:?no focused pane}
     cur=$(cat "$dir/$pane" 2>/dev/null || true); [ "$cur" = fired ] && cur=sticky
@@ -73,8 +91,15 @@ case "$1" in
   event)
     ev=$(printf '%s' "${HERDR_PLUGIN_EVENT_JSON:-}" | jq -r '[.data.pane_id // "", .data.agent_status // ""] | @tsv')
     pane=${ev%%	*}; status=${ev#*	}
-    [ -n "$pane" ] && [ -e "$dir/$pane" ] || exit 0
-    case "${HERDR_PLUGIN_EVENT:-}" in pane.closed|pane_closed|pane.exited|pane_exited) unmark "$pane"; exit 0 ;; esac
+    [ -n "$pane" ] || exit 0
+    case "${HERDR_PLUGIN_EVENT:-}" in pane.closed|pane_closed|pane.exited|pane_exited)
+      rm -f "$blocked/$pane"; [ -e "$dir/$pane" ] && unmark "$pane"; exit 0 ;; esac
+    case "$status" in  # unknown keeps a pending escalation alive
+      blocked) [ -e "$blocked/$pane" ] || { stamp="$$.$(date +%s)"; echo "$stamp" > "$blocked/$pane"
+        escalate "$pane" "$stamp" </dev/null >/dev/null 2>&1 & } ;;
+      working|idle|done) rm -f "$blocked/$pane" ;;
+    esac
+    [ -e "$dir/$pane" ] || exit 0
     mode=$(cat "$dir/$pane")
     case "$status" in
       working) [ "$mode" = fired ] && echo sticky > "$dir/$pane"; exit 0 ;;
@@ -85,7 +110,7 @@ case "$1" in
       blocked)   msg="Needs your input" ;;
       *) exit 0 ;;
     esac
-    title=$("$herdr" pane get "$pane" 2>/dev/null | jq -r '.result.pane | .terminal_title_stripped // .agent // "agent"')
+    title=$(title "$pane")
     if [ "$mode" = once ]; then unmark "$pane"; else echo fired > "$dir/$pane"; fi
     notify "$title" "$msg" "$pane" ;;
 esac

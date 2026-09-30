@@ -18,7 +18,11 @@ unmark() { rm -f "$dir/$1"; "$herdr" pane report-metadata "$1" --source noah.wat
 toast() { "$herdr" notification show "$1" --body "$2" --sound none >/dev/null 2>&1 || true; }
 
 notify() {
-  if command -v terminal-notifier >/dev/null; then
+  # already looking at herdr in kitty: an in-app toast is enough
+  front=$(lsappinfo info -only bundleid "$(lsappinfo front 2>/dev/null)" 2>/dev/null || true)
+  if case "$front" in *net.kovidgoyal.kitty*) true ;; *) false ;; esac; then
+    toast "$1" "$2"
+  elif command -v terminal-notifier >/dev/null; then
     # click: bring kitty forward and focus the pane that finished
     terminal-notifier -title "$1" -message "$2" -sound Glass -group "herdr-watch-$3" \
       -activate net.kovidgoyal.kitty \
@@ -30,7 +34,7 @@ notify() {
   idle=$(ioreg -c IOHIDSystem 2>/dev/null | awk '/HIDIdleTime/ {print int($NF/1000000000); exit}')
   collie=$(ls "$HOME"/.config/herdr/plugins/github/herdr.collie-*/bin/collie 2>/dev/null | head -1)
   if [ "${idle:-0}" -ge "$away_secs" ] && [ -n "$collie" ]; then
-    "$collie" push-test "$1" "$2" >/dev/null 2>&1 || true
+    if "$collie" push-test "$1" "$2" >/dev/null 2>&1; then toast "Also sent to phone" "$1: $2"; fi
   fi
 }
 

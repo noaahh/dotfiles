@@ -96,11 +96,11 @@ def pick():
          "--reverse", "--no-sort"],
         input="\n".join(rows), capture_output=True, text=True)
     chosen = [l.split("\t")[0] for l in fzf.stdout.splitlines() if l]
-    for pane in chosen:
-        subprocess.run([HERDR, "pane", "close", pane], capture_output=True)
+    closed = sum(subprocess.run([HERDR, "pane", "close", p], capture_output=True).returncode == 0 for p in chosen)
     if chosen:
-        subprocess.run([HERDR, "plugin", "action", "invoke", "refresh-archive", "--plugin", "herdr.omnisearch"], capture_output=True)
-        input(f"Closed {len(chosen)}. Find them again with prefix+shift+a. Enter to close.")
+        archived = subprocess.run([HERDR, "plugin", "action", "invoke", "refresh-archive", "--plugin", "herdr.omnisearch"], capture_output=True).returncode == 0
+        body = "Find them with prefix+shift+a" if archived else "Archive refresh failed"
+        subprocess.run([HERDR, "notification", "show", f"Closed {closed} of {len(chosen)} panes", "--body", body, "--sound", "none"], capture_output=True)
 
 
 if __name__ == "__main__":

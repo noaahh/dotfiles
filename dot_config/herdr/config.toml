@@ -19,8 +19,14 @@ previous_tab = "alt+shift+tab"
 next_tab = "alt+tab"
 previous_workspace = "prefix+shift+left"
 next_workspace = "prefix+shift+right"
-next_agent = "alt+a"
+next_agent = ""  # alt+a runs next-agent.sh below
 previous_agent = "alt+shift+a"
+
+[[keys.command]]
+key = "alt+a"
+type = "shell"
+command = "~/.config/herdr/next-agent.sh"
+description = "next agent: needs-attention first, else cycle working"
 
 [[keys.command]]
 key = "prefix+alt+g"

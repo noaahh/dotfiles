@@ -87,6 +87,8 @@ brew "redis"
 brew "snowflake-cli"
 brew "hashicorp/tap/terraform", trusted: true
 brew "gopass"
+brew "gnupg"
+brew "pinentry-mac"
 brew "snowplow/taps/snowplow-cli", trusted: true
 
 # Networking

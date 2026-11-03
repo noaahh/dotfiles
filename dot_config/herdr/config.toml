@@ -21,6 +21,8 @@ previous_workspace = "prefix+shift+left"
 next_workspace = "prefix+shift+right"
 next_agent = ""  # alt+a runs next-agent.sh below
 previous_agent = "alt+shift+a"
+open_worktree = "prefix+shift+o"  # new_worktree stays on default prefix+shift+g
+remove_worktree = "prefix+alt+x"  # herdr asks for confirmation
 
 [[keys.command]]
 key = "alt+a"
@@ -56,10 +58,10 @@ command = "herdr.omnisearch.open-archive"
 description = "OmniSearch: archived conversations"
 
 [[keys.command]]
-key = "prefix+shift+o"
+key = ["prefix+k", "ctrl+alt+k"]  # kitty maps cmd+k to ctrl+alt+k
 type = "plugin_action"
-command = "jwarykowski.herdr-shepherd.open"
-description = "shepherd"
+command = "herdr-bar.open"
+description = "herdr-bar: command bar"
 
 [[keys.command]]
 key = "prefix+n"
@@ -72,6 +74,12 @@ key = "prefix+alt+n"
 type = "plugin_action"
 command = "noah.watch.toggle-sticky"
 description = "watch: notify every time this agent finishes"
+
+[[keys.command]]
+key = "prefix+alt+w"
+type = "plugin_action"
+command = "noah.wt.reap"
+description = "worktrees: review and reap"
 
 [[keys.command]]
 key = "prefix+d"

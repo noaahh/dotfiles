@@ -1,0 +1,30 @@
+{{- if and (hasKey . "ovis") .ovis (lookPath "herdr") -}}
+#!/bin/sh
+# Ovis (browser and phone client for the Herdr agent herd) opens a network
+# service, so it is installed only where it is wanted rather than on every
+# machine this repo provisions.
+#
+# Opt in per machine by setting `ovis = true` under [data] in the local
+# ~/.config/chezmoi/chezmoi.toml. The flag lives there, not here, so no
+# hostname or tailnet name ends up in this repo. The lookPath gate keeps the
+# script from recording as done on a machine that has the flag but no herdr.
+#
+# Phone access is a manual, per-machine step, kept out of this script:
+#   tailscale serve --bg --https=443 http://127.0.0.1:7317
+
+set -eu
+
+# The plugin build runs bun; chezmoi runs this under sh without the shell PATH.
+export PATH="$HOME/.local/share/mise/shims:$HOME/.bun/bin:/opt/homebrew/bin:/usr/local/bin:$PATH"
+
+herdr plugin install devswha/ovis --yes
+
+# Plugin settings come from `env` in its config dir, not the shell. Ovis may
+# write there itself, so append the opt-out instead of owning the file.
+env_file="$(herdr plugin config-dir devswha.ovis)/env"
+mkdir -p "$(dirname "$env_file")"
+touch "$env_file" && chmod 600 "$env_file"
+grep -q '^OVIS_TELEMETRY=' "$env_file" || printf 'OVIS_TELEMETRY=0\n' >> "$env_file"
+
+herdr plugin action invoke devswha.ovis.start >/dev/null 2>&1 || true
+{{ end -}}

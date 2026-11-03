@@ -13,7 +13,6 @@
 set -eu
 herdr=${HERDR_BIN_PATH:-herdr}
 dir="${HERDR_PLUGIN_STATE_DIR:-${XDG_STATE_HOME:-$HOME/.local/state}/herdr/plugins/noah.watch}/watched"
-away_secs=${WATCH_AWAY_SECS:-300}
 blocked="${dir%/watched}/blocked"
 mkdir -p "$dir" "$blocked"
 
@@ -47,12 +46,6 @@ notify() {
       -execute "HERDR_SOCKET_PATH='${HERDR_SOCKET_PATH:-}' '$herdr' agent focus '$3'" >/dev/null
   else
     notify-send "$1" "$2" 2>/dev/null || true
-  fi
-  # away from the Mac: also push to the phone through Collie
-  idle=$(ioreg -c IOHIDSystem 2>/dev/null | awk '/HIDIdleTime/ {print int($NF/1000000000); exit}')
-  collie=$(ls "$HOME"/.config/herdr/plugins/github/herdr.collie-*/bin/collie 2>/dev/null | head -1)
-  if [ "${idle:-0}" -ge "$away_secs" ] && [ -n "$collie" ]; then
-    if "$collie" push-test "$1" "$2" >/dev/null 2>&1; then toast "Also sent to phone" "$1: $2"; fi
   fi
 }
 

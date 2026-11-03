@@ -33,7 +33,7 @@ Log out and back in for the `NSGlobalDomain` keys to take hold.
 
 Anything that identifies a specific machine, network, or person stays out of
 this repo. Machines opt into optional capabilities via flags under `[data]` in
-the local, uncommitted `~/.config/chezmoi/chezmoi.toml`, e.g. `collie = true`.
+the local, uncommitted `~/.config/chezmoi/chezmoi.toml`, e.g. `ovis = true`.
 
 ## Layout
 

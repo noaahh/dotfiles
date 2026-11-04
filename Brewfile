@@ -50,9 +50,6 @@ brew "mise"
 brew "uv"
 brew "oven-sh/bun/bun", trusted: true
 
-# Documents and publishing
-brew "poppler"
-
 # Agents and AI tooling
 brew "herdr"
 brew "hunk"
@@ -86,7 +83,6 @@ cask "hiddenbar"
 cask "meetingbar"
 cask "raycast"
 cask "scroll-reverser"
-cask "shottr"
 cask "superkey"
 
 # Terminals and development
@@ -99,7 +95,6 @@ cask "visual-studio-code"
 cask "chatgpt"
 cask "claude"
 cask "codex"
-cask "codex-app"
 
 # Productivity
 cask "antinote"
@@ -150,8 +145,5 @@ uv "context-stats"
 uv "dbt-core", with: ["dbt-snowflake"]
 uv "meltano"
 uv "ruff"
-npm "@doist/todoist-cli"
-npm "@tobilu/qmd"
-npm "defuddle"
-npm "node-gyp"
-npm "serverless"
+# JS CLIs (td, qmd, defuddle, serverless) are bun globals: `bun add -g`.
+# Brewfile has no bun verb, and npm here would install into mise's node.

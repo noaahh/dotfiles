@@ -9,10 +9,10 @@ approvals_reviewer = "auto_review"
 allow_login_shell = false
 file_opener = "vscode"
 model = "gpt-6-astra"
-model_reasoning_effort = "medium"
+model_reasoning_effort = "xhigh"
 personality = "pragmatic"
 sandbox_mode = "workspace-write"
-service_tier = "fast"
+service_tier = "default"
 suppress_unstable_features_warning = true
 web_search = "cached"
 

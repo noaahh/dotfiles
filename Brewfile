@@ -1,4 +1,4 @@
-# Aligned with the machine on 2026-09-25. `brew bundle` installs what is
+# Aligned with the machine on 2026-11-04. `brew bundle` installs what is
 # missing on apply; it never removes, so treat this as the guaranteed set.
 # node is deliberately absent: node and go versions come from mise
 # (~/.config/mise/config.toml).
@@ -81,10 +81,7 @@ brew "mole"
 
 # Window management and menu bar
 cask "aerospace"
-cask "betterdisplay"
 cask "flux-app"
-cask "hiddenbar"
-cask "meetingbar"
 cask "scroll-reverser"
 cask "vicinae"
 cask "superkey"
@@ -100,7 +97,6 @@ cask "codex"
 
 # Productivity
 cask "antinote"
-cask "bettercapture"
 cask "obsidian"
 cask "portfolioperformance"
 

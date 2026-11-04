@@ -58,6 +58,10 @@ inner.vertical = 8
     if.app-id = 'com.tinyspeck.slackmacgap'
     run = 'move-node-to-workspace 3'
 
+[[on-window-detected]]
+    if.app-id = 'com.linear'
+    run = 'move-node-to-workspace 5'
+
 [mode.main.binding]
     # Terminal / browser
     ctrl-alt-cmd-enter = "exec-and-forget open -n -a kitty"

@@ -10,16 +10,16 @@
 
 {
    "$schema": "https://vicinae.com/schemas/config.json",
-   "telemetry": {
-      "system_info": false
-   },
    "close_on_focus_loss": true,
-   "escape_key_behavior": "close_window",
+   "escape_key_behavior": "",
    "tray": {
       "enabled": false
    },
    "global_shortcuts": {
       "toggle": "control+space"
+   },
+   "telemetry": {
+      "system_info": false
    },
    "launcher_window": {
       "compact_mode": {
@@ -40,6 +40,9 @@
                "shortcut": "control+shift+V"
             }
          }
+      },
+      "wm": {
+         "enabled": false
       }
    }
 }

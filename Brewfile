@@ -104,7 +104,6 @@ cask "portfolioperformance"
 # Media and communication
 brew "bjarneo/cliamp/cliamp", trusted: true
 cask "discord"
-cask "spotify"
 
 # Sync and network
 cask "syncthing-app"

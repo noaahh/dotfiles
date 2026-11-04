@@ -13,7 +13,6 @@ new_cwd = "follow"
 prefix = "ctrl+b"
 last_pane = "prefix+tab"
 cycle_pane_next = ""  # freed prefix+tab for last_pane
-swap_pane_left = "prefix+alt+h"  # prefix+shift+h belongs to hunk review
 switch_workspace = "alt+1..9"
 previous_tab = "alt+shift+tab"
 next_tab = "alt+tab"
@@ -125,29 +124,3 @@ resume_agents_on_restore = true
 
 [experimental]
 pane_history = true
-
-# BEGIN jhochenbaum.hunkdiff — managed by `setup-keys`; edit via the plugin, not by hand
-[[keys.command]]
-key = "prefix+shift+h"
-type = "plugin_action"
-command = "jhochenbaum.hunkdiff.review"
-description = "hunk: review changes"
-
-[[keys.command]]
-key = "prefix+shift+s"
-type = "plugin_action"
-command = "jhochenbaum.hunkdiff.send-review"
-description = "hunk: send review to agent"
-
-[[keys.command]]
-key = "prefix+shift+c"
-type = "plugin_action"
-command = "jhochenbaum.hunkdiff.review:commit"
-description = "hunk: review the last commit"
-
-[[keys.command]]
-key = "prefix+shift+i"
-type = "plugin_action"
-command = "jhochenbaum.hunkdiff.review:staged"
-description = "hunk: review staged changes"
-# END jhochenbaum.hunkdiff

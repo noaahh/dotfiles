@@ -53,7 +53,6 @@ brew "oven-sh/bun/bun", trusted: true
 
 # Agents and AI tooling
 brew "herdr"
-brew "hunk"
 brew "anomalyco/tap/opencode", trusted: true
 brew "ampcode/tap/ampcode", trusted: true
 brew "rtk"

@@ -14,7 +14,6 @@ formatting does not show up as drift. */ -}}
   "autoCompactEnabled": true,
   "agentPushNotifEnabled": true,
   "remoteControlAtStartup": true,
-  "statusLine": { "type": "command", "command": "~/.claude/scripts/statusline.sh" },
   "enabledPlugins": {
     "mattpocock-skills@claude-plugins-official": true,
     "i-have-adhd@i-have-adhd": true,

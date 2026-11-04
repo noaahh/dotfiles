@@ -116,7 +116,6 @@ cask "font-jetbrains-mono-nerd-font"
 mas "Amphetamine", id: 937984704
 
 # Other package managers
-uv "context-stats"
 uv "dbt-core", with: ["dbt-snowflake"]
 uv "meltano"
 uv "ruff"

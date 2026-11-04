@@ -7,7 +7,7 @@ already match, so Codex's own formatting does not show up as drift. */ -}}
 approval_policy = "on-request"
 approvals_reviewer = "auto_review"
 allow_login_shell = false
-file_opener = "vscode"
+file_opener = "none"
 model = "gpt-6-astra"
 model_reasoning_effort = "xhigh"
 personality = "pragmatic"

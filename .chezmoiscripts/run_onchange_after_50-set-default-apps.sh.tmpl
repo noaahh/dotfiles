@@ -1,0 +1,66 @@
+{{- if and (eq .chezmoi.os "darwin") (lookPath "duti") -}}
+#!/bin/sh
+# Opens text and source files in Zed instead of whatever claimed them last
+# (Xcode, TextEdit, kitty, browsers). Gated on duti being on PATH so the run
+# is not recorded as done before the Brewfile has installed it.
+# Property lists stay with Xcode: binary plists are not readable as text.
+# Extensions no installed app declares (.tf, .env, .lock, ...) only have
+# dynamic UTIs, which Launch Services refuses here (error -50); set those
+# once with Finder > Get Info > Open with > Change All.
+set -eu
+settings="$(mktemp)"
+trap 'rm -f "$settings"' EXIT
+cat > "$settings" <<'EOF'
+dev.zed.Zed public.plain-text all
+dev.zed.Zed public.source-code all
+dev.zed.Zed public.script all
+dev.zed.Zed public.shell-script all
+dev.zed.Zed public.python-script all
+dev.zed.Zed public.ruby-script all
+dev.zed.Zed com.netscape.javascript-source all
+dev.zed.Zed public.json all
+dev.zed.Zed public.yaml all
+dev.zed.Zed public.xml all
+dev.zed.Zed public.css all
+dev.zed.Zed public.log all
+dev.zed.Zed public.comma-separated-values-text all
+dev.zed.Zed public.tab-separated-values-text all
+dev.zed.Zed net.daringfireball.markdown all
+dev.zed.Zed .txt all
+dev.zed.Zed .md all
+dev.zed.Zed .markdown all
+dev.zed.Zed .json all
+dev.zed.Zed .yaml all
+dev.zed.Zed .yml all
+dev.zed.Zed .toml all
+dev.zed.Zed .ini all
+dev.zed.Zed .cfg all
+dev.zed.Zed .log all
+dev.zed.Zed .sh all
+dev.zed.Zed .zsh all
+dev.zed.Zed .bash all
+dev.zed.Zed .py all
+dev.zed.Zed .rb all
+dev.zed.Zed .js all
+dev.zed.Zed .mjs all
+dev.zed.Zed .ts all
+dev.zed.Zed .tsx all
+dev.zed.Zed .jsx all
+dev.zed.Zed .go all
+dev.zed.Zed .rs all
+dev.zed.Zed .sql all
+dev.zed.Zed .css all
+dev.zed.Zed .xml all
+dev.zed.Zed .csv all
+dev.zed.Zed .tsv all
+dev.zed.Zed .diff all
+dev.zed.Zed .patch all
+EOF
+duti "$settings"
+# duti exits 0 even when Launch Services rejects a change (for example from a
+# sandboxed shell), so check one mapping; a failure keeps the script pending.
+case "$(duti -x txt | head -1)" in
+  Zed.app) ;;
+  *) echo "default apps were not applied" >&2; exit 1 ;;
+esac
+{{ end -}}

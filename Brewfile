@@ -114,9 +114,6 @@ cask "tailscale-app"
 cask "font-geist-mono"
 cask "font-jetbrains-mono-nerd-font"
 
-# App Store
-mas "Amphetamine", id: 937984704
-
 # Other package managers
 uv "dbt-core", with: ["dbt-snowflake"]
 uv "meltano"

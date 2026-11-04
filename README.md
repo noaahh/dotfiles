@@ -29,6 +29,18 @@ macos-defaults --revert   # back to stock
 
 Log out and back in for the `NSGlobalDomain` keys to take hold.
 
+## Installed by hand
+
+[Insomnia](https://github.com/krishhgg/Insomnia) keeps the Mac awake with the
+lid closed. It has no Homebrew cask and its installer needs a password for a
+sudoers rule limited to four `pmset` commands, so it is built from a pinned,
+reviewed tag:
+
+```shell
+git clone --branch <tag> --depth 1 https://github.com/krishhgg/Insomnia.git ~/dev/misc/Insomnia
+~/dev/misc/Insomnia/scripts/install.sh      # uninstall.sh in the same folder removes it
+```
+
 ## Machine-specific opt-ins
 
 Anything that identifies a specific machine, network, or person stays out of

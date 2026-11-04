@@ -15,6 +15,7 @@ Brewfile
 # macOS-only: window management, terminal, launch agents and the sources
 # those tools are built from.
 .config/aerospace
+.config/karabiner
 .config/kitty
 Library
 .local/bin/macos-defaults

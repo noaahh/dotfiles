@@ -85,7 +85,7 @@ cask "aerospace"
 cask "flux-app"
 cask "scroll-reverser"
 cask "vicinae"
-cask "superkey"
+cask "karabiner-elements"
 
 # Terminals and development
 cask "kitty"

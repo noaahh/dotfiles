@@ -5,6 +5,7 @@
 
 tap "ampcode/tap"
 tap "anomalyco/tap"
+tap "bjarneo/cliamp"
 tap "hashicorp/tap"
 tap "jwarykowski/tap"
 tap "nikitabobko/tap", trusted: { casks: ["aerospace"] }
@@ -101,6 +102,7 @@ cask "obsidian"
 cask "portfolioperformance"
 
 # Media and communication
+brew "bjarneo/cliamp/cliamp", trusted: true
 cask "discord"
 cask "spotify"
 

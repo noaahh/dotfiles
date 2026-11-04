@@ -7,7 +7,6 @@ tap "ampcode/tap"
 tap "anomalyco/tap"
 tap "bjarneo/cliamp"
 tap "hashicorp/tap"
-tap "jwarykowski/tap"
 tap "nikitabobko/tap", trusted: { casks: ["aerospace"] }
 tap "oven-sh/bun"
 tap "snowplow/taps"
@@ -59,7 +58,6 @@ brew "anomalyco/tap/opencode", trusted: true
 brew "ampcode/tap/ampcode", trusted: true
 brew "rtk"
 brew "rust"
-brew "jwarykowski/tap/shepherd", trusted: true
 
 # Cloud and data
 brew "awscli"

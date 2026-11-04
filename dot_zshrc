@@ -8,7 +8,7 @@ for config_file in ~/.zsh.d/*.sh; do
   [ -r "$config_file" ] && source "$config_file"
 done
 
-# Plugin-installed binaries land here (e.g. the shepherd symlink).
+# Tool-installed binaries land here (e.g. chm-kit scripts).
 export PATH="$HOME/bin:$PATH"
 
 # Managed scripts (e.g. macos-defaults) and uv/pipx-style installs.

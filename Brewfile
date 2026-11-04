@@ -1,19 +1,16 @@
 # Aligned with the machine on 2026-09-25. `brew bundle` installs what is
 # missing on apply; it never removes, so treat this as the guaranteed set.
-# node is deliberately absent: it stays installed as a brew dependency of
-# agent-browser, but node and go versions come from mise
+# node is deliberately absent: node and go versions come from mise
 # (~/.config/mise/config.toml).
 
 tap "ampcode/tap"
 tap "anomalyco/tap"
-tap "bjarneo/cliamp"
 tap "hashicorp/tap"
 tap "jwarykowski/tap"
 tap "nikitabobko/tap", trusted: { casks: ["aerospace"] }
 tap "oven-sh/bun"
 tap "snowplow/taps"
 tap "stablyai/orca", trusted: { casks: ["orca"] }
-tap "steipete/tap", trusted: { casks: ["codexbar"] }
 
 # CLI basics
 brew "bat"
@@ -26,7 +23,6 @@ brew "findutils"
 brew "fzf"
 brew "gawk"
 brew "gnu-sed"
-brew "htop"
 brew "jq"
 brew "just"
 brew "mcfly"
@@ -55,35 +51,23 @@ brew "uv"
 brew "oven-sh/bun/bun", trusted: true
 
 # Documents and publishing
-brew "code2prompt"
-brew "hugo"
-brew "marp-cli"
-brew "pandoc"
 brew "poppler"
 
 # Agents and AI tooling
-brew "agent-browser"
 brew "herdr"
 brew "hunk"
-brew "llama.cpp"
 brew "anomalyco/tap/opencode", trusted: true
 brew "ampcode/tap/ampcode", trusted: true
 brew "rtk"
-brew "python@3.11"
 brew "rust"
 brew "jwarykowski/tap/shepherd", trusted: true
 
 # Cloud and data
 brew "awscli"
 brew "docker-buildx"
-brew "kubernetes-cli"
 brew "lazydocker"
-brew "lazysql"
-brew "mysql-client"
-brew "pocketbase"
 brew "railway"
 brew "rclone"
-brew "redis"
 brew "snowflake-cli"
 brew "hashicorp/tap/terraform", trusted: true
 brew "gopass"
@@ -91,14 +75,8 @@ brew "gnupg"
 brew "pinentry-mac"
 brew "snowplow/taps/snowplow-cli", trusted: true
 
-# Networking
-brew "wireguard-tools"
-
 # Desktop odds and ends
-brew "automake"
 brew "mole"
-brew "nvtop"
-brew "bjarneo/cliamp/cliamp", trusted: true
 
 # Window management and menu bar
 cask "aerospace"
@@ -109,11 +87,9 @@ cask "meetingbar"
 cask "raycast"
 cask "scroll-reverser"
 cask "shottr"
-cask "stats"
 cask "superkey"
 
 # Terminals and development
-cask "clickhouse"
 cask "docker-desktop"
 cask "fork"
 cask "kitty"
@@ -124,21 +100,16 @@ cask "chatgpt"
 cask "claude"
 cask "codex"
 cask "codex-app"
-cask "codexbar"
-cask "superwhisper"
 
 # Productivity
 cask "antinote"
 cask "bettercapture"
-cask "coteditor"
-cask "libreoffice"
 cask "obsidian"
 cask "portfolioperformance"
 
 # Media and communication
 cask "discord"
 cask "spotify"
-cask "vlc"
 
 # Sync and network
 cask "syncthing-app"
@@ -150,7 +121,6 @@ cask "font-jetbrains-mono-nerd-font"
 
 # App Store
 mas "Amphetamine", id: 937984704
-mas "rcmd", id: 1596283165
 
 # VSCode Extensions
 vscode "charliermarsh.ruff"
@@ -177,7 +147,6 @@ vscode "ms-vscode.remote-server"
 
 # Other package managers
 uv "context-stats"
-uv "cookiecutter"
 uv "dbt-core", with: ["dbt-snowflake"]
 uv "meltano"
 uv "ruff"

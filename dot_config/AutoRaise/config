@@ -1,5 +1,0 @@
-#AutoRaise config file
-delay=2
-requireMouseStop=true
-ignoreSpaceChanged=true
-disableKey=control

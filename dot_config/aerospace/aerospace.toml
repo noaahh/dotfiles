@@ -58,17 +58,10 @@ inner.vertical = 8
     if.app-id = 'com.tinyspeck.slackmacgap'
     run = 'move-node-to-workspace 3'
 
-[[on-window-detected]]
-    if.app-id = 'com.DanPristupov.Fork'
-    run = ['layout floating', 'move-node-to-workspace 5']
-
 [mode.main.binding]
     # Terminal / browser
     ctrl-alt-cmd-enter = "exec-and-forget open -n -a kitty"
     ctrl-alt-cmd-shift-enter = "exec-and-forget open -a helium"
-
-    # Launcher
-    ctrl-alt-cmd-space = "exec-and-forget open -a Raycast"
 
     # Close
     ctrl-alt-cmd-w = 'close'

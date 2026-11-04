@@ -26,6 +26,7 @@ DOCK_KEYS=(
   expose-animation-duration
   workspaces-swoosh-animation-off
   mru-spaces
+  expose-group-apps
   no-bouncing
   springboard-show-duration
   springboard-hide-duration
@@ -64,6 +65,7 @@ revert() {
   for key in "${GLOBAL_KEYS[@]}"; do
     defaults delete -g "$key" 2>/dev/null || true
   done
+  defaults delete com.apple.spaces spans-displays 2>/dev/null || true
   defaults delete com.apple.finder DisableAllAnimations 2>/dev/null || true
   for key in AppleShowAllExtensions ShowPathbar FXDefaultSearchScope \
              FXEnableExtensionChangeWarning; do
@@ -134,6 +136,14 @@ apply() {
   # Stop macOS reordering Spaces by recency, which desyncs a tiling WM's
   # fixed workspace numbers from the ones the system thinks it has.
   defaults write com.apple.dock mru-spaces -bool false
+
+  # Mission Control groups windows by app. AeroSpace parks hidden windows in
+  # a screen corner; ungrouped, Mission Control shows them as tiny slivers.
+  defaults write com.apple.dock expose-group-apps -bool true
+
+  # One Space spanning all displays ("Displays have separate Spaces" off).
+  # AeroSpace recommends it for multi-monitor stability. Needs a logout.
+  defaults write com.apple.spaces spans-displays -bool true
 
   # --- Windows and dialogs ------------------------------------------------
   # Ctrl+Cmd drag moves a window from anywhere in it, not just the title bar.

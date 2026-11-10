@@ -9,12 +9,19 @@
                             {
                                 "from": {
                                     "key_code": "caps_lock",
-                                    "modifiers": { "optional": ["any"] }
+                                    "modifiers": {
+                                        "optional": [
+                                            "any"
+                                        ]
+                                    }
                                 },
                                 "to": [
                                     {
                                         "key_code": "left_control",
-                                        "modifiers": ["left_option", "left_command"]
+                                        "modifiers": [
+                                            "left_option",
+                                            "left_command"
+                                        ]
                                     }
                                 ],
                                 "type": "basic"
@@ -25,7 +32,20 @@
             },
             "name": "Default profile",
             "selected": true,
-            "virtual_hid_keyboard": { "keyboard_type_v2": "iso" }
+            "virtual_hid_keyboard": {
+                "keyboard_type_v2": "iso"
+            },
+            "devices": [
+                {
+                    "identifiers": {
+                        "is_keyboard": true,
+                        "is_pointing_device": true,
+                        "vendor_id": 13364,
+                        "product_id": 263
+                    },
+                    "ignore": false
+                }
+            ]
         }
     ]
 }

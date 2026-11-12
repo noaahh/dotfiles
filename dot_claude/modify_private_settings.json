@@ -10,6 +10,7 @@ formatting does not show up as drift. */ -}}
   "model": "opus",
   "effortLevel": "high",
   "tui": "fullscreen",
+  "statusLine": { "type": "command", "command": "~/.claude/statusline.sh", "padding": 0 },
   "theme": "auto",
   "autoCompactEnabled": true,
   "agentPushNotifEnabled": true,

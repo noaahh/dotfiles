@@ -25,7 +25,6 @@ jobs:
         run: >
           chezmoi init --source "$PWD"
           --promptString "Git email"=ci@example.invalid,"Git name"=CI
-          --promptBool "Run the Ovis phone and browser client on this machine"=false
 
       - name: Apply (files and externals, no scripts)
         run: chezmoi apply --source "$PWD" --exclude scripts,encrypted --force

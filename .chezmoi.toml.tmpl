@@ -4,14 +4,10 @@ existing config, so re-running init keeps prior answers. Machine-identifying
 values and capability opt-ins live in the generated file, never in this repo. */}}
 {{- $email := promptStringOnce . "email" "Git email" -}}
 {{- $name := promptStringOnce . "name" "Git name" -}}
-{{- $ovis := promptBoolOnce . "ovis" "Run the Ovis phone and browser client on this machine" false -}}
 
 [data]
     email = {{ $email | quote }}
     name = {{ $name | quote }}
-    # Ovis (phone and browser client) opt-in; the flag lives here so no hostname or
-    # tailnet name is published in the repo.
-    ovis = {{ $ovis }}
 
 # To manage the encrypted ssh config, uncomment and add an identity:
 # encryption = "age"

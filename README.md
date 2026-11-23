@@ -45,7 +45,7 @@ git clone --branch <tag> --depth 1 https://github.com/krishhgg/Insomnia.git ~/de
 
 Anything that identifies a specific machine, network, or person stays out of
 this repo. Machines opt into optional capabilities via flags under `[data]` in
-the local, uncommitted `~/.config/chezmoi/chezmoi.toml`, e.g. `ovis = true`.
+the local, uncommitted `~/.config/chezmoi/chezmoi.toml`.
 
 ## Layout
 
